@@ -9,6 +9,7 @@ import { InputDate } from "../InputDate";
 import { DrawerBase } from "./DrawerBase";
 
 import { createExpense } from "@/app/actions/entries";
+import { getTodaysDate } from "@/utils";
 
 interface ExpenseFormValues {
   date: string;
@@ -31,10 +32,10 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
     setValue,
   } = useForm<ExpenseFormValues>({
     defaultValues: {
-      date: "",
+      date: getTodaysDate(),
       expenseAmount: "",
       expenseName: "",
-      paymentType: "",
+      paymentType: "cash",
     },
   });
 
@@ -68,6 +69,7 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
         <InputDate
           acceptFutureDates={false}
           className="gap-2"
+          defaultValue={getTodaysDate()}
           error={errors.date}
           name="date"
           register={register}
@@ -80,13 +82,11 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
             <strong>Concepto: </strong>
           </label>
           <input
-            aria-invalid={errors.expenseName ? "true" : "false"}
             id="expense-name"
-            placeholder="Gasto en..."
+            placeholder="Gasto"
             type="text"
-            {...register("expenseName", { required: "Campo Requerido" })}
+            {...register("expenseName")}
           />
-          <FormError error={errors.expenseName} />
         </div>
 
         <div className="flex flex-col gap-2">

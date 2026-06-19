@@ -9,6 +9,7 @@ import { InputDate } from "../InputDate";
 import { DrawerBase } from "./DrawerBase";
 
 import { createSale } from "@/app/actions/entries";
+import { getTodaysDate } from "@/utils";
 
 interface SaleFormValues {
   date: string;
@@ -31,8 +32,8 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
     setValue,
   } = useForm<SaleFormValues>({
     defaultValues: {
-      date: "",
-      paymentType: "",
+      date: getTodaysDate(),
+      paymentType: "cash",
       saleAmount: "",
       saleName: "",
     },
@@ -68,6 +69,7 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
         <InputDate
           acceptFutureDates={false}
           className="gap-2"
+          defaultValue={getTodaysDate()}
           error={errors.date}
           name="date"
           register={register}
@@ -80,13 +82,11 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
             <strong>Concepto: </strong>
           </label>
           <input
-            aria-invalid={errors.saleName ? "true" : "false"}
             id="sale-name"
-            placeholder="Venta de..."
+            placeholder="Venta"
             type="text"
-            {...register("saleName", { required: "Campo Requerido" })}
+            {...register("saleName")}
           />
-          <FormError error={errors.saleName} />
         </div>
 
         <div className="flex flex-col gap-2">

@@ -44,7 +44,9 @@ async function createEntry(
 ): Promise<ActionResult> {
   const occurredOn = toIsoDate(input.date);
   if (!occurredOn) return { error: "Falta la fecha" };
-  if (!input.label?.trim()) return { error: "Falta el concepto" };
+
+  const trimmedLabel = input.label?.trim();
+  const label = trimmedLabel || (kind === "sale" ? "Venta" : "Gasto");
 
   const amount = parseAmount(input.amount);
   if (amount === null) return { error: "Monto inválido" };
@@ -62,7 +64,7 @@ async function createEntry(
   const { error } = await supabase.from("entries").insert({
     amount,
     kind,
-    label: input.label.trim(),
+    label,
     occurred_on: occurredOn,
     payment: input.paymentType,
     user_id: user.id,
