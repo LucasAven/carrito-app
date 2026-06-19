@@ -5,7 +5,7 @@ import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
 import Appbar from "@/components/appbar";
 import BottomNav from "@/components/bottom-nav";
-import { CreateBalanceDrawer } from "@/components/Drawers";
+import { CreateBalanceDrawer, CreateExpenseDrawer } from "@/components/Drawers";
 
 const APP_NAME = "Carrito App";
 const APP_DEFAULT_TITLE = "Carrito App";
@@ -70,9 +70,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
               </button>
             </CreateBalanceDrawer>
           </Suspense>
-          <button className="pointer-events-auto rounded-md bg-cost px-3 py-2 font-semibold text-white">
-            Nuevo Gasto
-          </button>
+          <Suspense fallback={null}>
+            <CreateExpenseDrawer>
+              <button className="pointer-events-auto rounded-md bg-cost px-3 py-2 font-semibold text-white">
+                Nuevo Gasto
+              </button>
+            </CreateExpenseDrawer>
+          </Suspense>
         </div>
         <Suspense fallback={null}>
           <BottomNav />
