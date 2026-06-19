@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { Balance } from "@/components/Balance";
 import EarnsCostsTab from "@/components/EarnsCostsTab";
+import { EmptyState } from "@/components/EmptyState";
 import Section from "@/components/section";
 import { InternalRoutes, URL_FILTERS } from "@/constants/routes";
 import {
@@ -174,10 +175,28 @@ export default async function BalancePage({
 					/>
 				</Suspense>
 				{entries.length === 0 ? (
-					<p className="text-muted dark:text-muted-dark py-12 text-center text-sm font-semibold">
-						Aún no hay ventas ni gastos. Tocá Nueva Venta o Nuevo Gasto para
-						empezar.
-					</p>
+					<EmptyState
+						accent="brand"
+						description="Registrá tu primera venta o gasto para verlo acá."
+						icon={
+							<svg
+								aria-hidden="true"
+								fill="none"
+								height="40"
+								stroke="currentColor"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="1.8"
+								viewBox="0 0 24 24"
+								width="40"
+							>
+								<path d="M5 3.5l1.6 1.4L8.2 3.5l1.6 1.4 1.6-1.4 1.6 1.4 1.6-1.4 1.6 1.4L19 3.5V20l-1.6-1.4-1.6 1.4-1.6-1.4-1.6 1.4-1.6-1.4-1.6 1.4L6.6 18.6 5 20z" />
+								<line x1="8" x2="16" y1="9" y2="9" />
+								<line x1="8" x2="14" y1="13" y2="13" />
+							</svg>
+						}
+						title="Todavía no hay movimientos"
+					/>
 				) : (
 					<Suspense fallback={null}>
 						<EarnsCostsTab entries={entries} />
