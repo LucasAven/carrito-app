@@ -2,20 +2,10 @@ import { endOfMonth, parse, startOfMonth } from "date-fns";
 
 import { createClient } from "@/lib/supabase/server";
 import { PaymentType } from "@/types/balance";
+import type { Database } from "@/types/supabase";
 
-export type EntryKind = "sale" | "expense";
-
-export interface Entry {
-  amount: number;
-  created_at: string;
-  deleted_at: string | null;
-  id: string;
-  kind: EntryKind;
-  label: string;
-  occurred_on: string;
-  payment: PaymentType;
-  user_id: string;
-}
+export type Entry = Database["public"]["Tables"]["entries"]["Row"];
+export type EntryKind = Database["public"]["Enums"]["entry_kind"];
 
 interface ListOptions {
   paymentTypes?: PaymentType[];
