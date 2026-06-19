@@ -137,9 +137,16 @@ export default async function BalancePage({
         <Suspense fallback={<div>Loading...</div>}>
           <Balance earnings={earnings} expenses={expenses} total={total} />
         </Suspense>
-        <Suspense fallback={<div>Loading Earn...</div>}>
-          <EarnsCostsTab entries={entries} />
-        </Suspense>
+        {entries.length === 0 ? (
+          <p className="py-12 text-center text-zinc-500 dark:text-zinc-400">
+            Aún no hay ventas ni gastos. Tocá Nueva Venta o Nuevo Gasto para
+            empezar.
+          </p>
+        ) : (
+          <Suspense fallback={<div>Loading Earn...</div>}>
+            <EarnsCostsTab entries={entries} />
+          </Suspense>
+        )}
       </div>
     </Section>
   );

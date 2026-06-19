@@ -231,6 +231,6 @@ Update this as you go. One line per step.
 - [x] 12. Wire filter drawer
 - [x] 13. Hide search
 - [x] 14. Strip stats/calendar from nav
-- [ ] 15. Empty state
+- [x] 15. Empty state
 - [ ] 16. Cleanup
 - [ ] 17. Deploy
