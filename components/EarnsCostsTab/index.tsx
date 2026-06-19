@@ -55,7 +55,7 @@ const TabPanel = ({
 							</p>
 							<span className="bg-badge dark:bg-badge-dark text-muted dark:text-muted-dark mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold">
 								{PAYMENT_TYPE_LABELS[entry.payment]} ·{" "}
-								{format(new Date(entry.occurred_on), "dd MMM")}
+								{format(new Date(`${entry.occurred_on}T00:00:00`), "dd MMM")}
 							</span>
 						</div>
 						<span

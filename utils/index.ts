@@ -32,7 +32,13 @@ import {
  * //=> "2022-01-03"
  */
 export const getFullDateIso = (date: string | Date) => {
-  return new Date(date).toISOString().split("T")[0];
+  // Date objects represent a local instant: format locally so we don't roll
+  // into the next day via UTC conversion (e.g. late night in UTC-3).
+  if (date instanceof Date) return format(date, "yyyy-MM-dd");
+  // Date-only strings (yyyy-MM-dd) are already in the shape we want.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+  // Fallback for full ISO timestamps.
+  return format(new Date(date), "yyyy-MM-dd");
 };
 
 /**
