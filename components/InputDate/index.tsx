@@ -194,7 +194,7 @@ export const InputDate = <T extends FieldValues>({
 				<FormError error={error} />
 			</div>
 			<dialog
-				className="bg-sheet dark:bg-sheet-dark text-ink dark:text-ink-dark rounded-2xl p-2 shadow-2xl backdrop:bg-black/40"
+				className="bg-sheet dark:bg-sheet-dark text-ink dark:text-ink-dark fixed inset-0 m-auto h-fit max-h-[calc(100dvh-2rem)] w-fit max-w-[calc(100vw-2rem)] rounded-2xl p-2 shadow-2xl backdrop:bg-black/40"
 				onClose={() => setIsDialogOpen(false)}
 				onKeyDown={(e) => {
 					if (e.key === "Escape") {
