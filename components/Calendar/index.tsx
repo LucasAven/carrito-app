@@ -9,44 +9,58 @@ import { cn } from "@/utils/cn";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
+function CalendarIconLeft() {
+	return <ChevronLeft className="h-4 w-4" />;
+}
+
+function CalendarIconRight() {
+	return <ChevronRight className="h-4 w-4" />;
+}
+
 function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  ...props
+	className,
+	classNames,
+	showOutsideDays = true,
+	...props
 }: CalendarProps) {
-  return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("px-3", className)}
-      classNames={{
-        months:
-          "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 justify-center",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
-        nav: "flex items-center",
-        nav_button: "size-7 bg-transparent p-0",
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell: "grow",
-        row: "flex w-full mt-2",
-        day: "rounded-full h-9 w-9 p-0",
-        day_selected: "bg-indigo-300 text-black",
-        day_today: "!bg-indigo-600 text-white dark:text-black font-bold",
-        day_disabled: "opacity-50",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      components={{
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-      }}
-      {...props}
-    />
-  );
+	return (
+		<DayPicker
+			showOutsideDays={showOutsideDays}
+			className={cn("px-3", className)}
+			classNames={{
+				months:
+					"flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 justify-center",
+				month: "space-y-4",
+				caption: "flex justify-center pt-1 relative items-center",
+				caption_label:
+					"font-display text-lg font-bold text-ink dark:text-ink-dark",
+				nav: "flex items-center",
+				nav_button:
+					"flex size-9 items-center justify-center rounded-[13px] bg-track dark:bg-track-dark text-muted dark:text-muted-dark p-0",
+				nav_button_previous: "absolute left-1",
+				nav_button_next: "absolute right-1",
+				table: "w-full border-collapse space-y-1",
+				head_row: "flex",
+				head_cell:
+					"grow text-xs font-extrabold text-muted dark:text-muted-dark",
+				row: "flex w-full mt-2",
+				day: "rounded-full h-10 w-10 p-0 font-display font-bold text-ink dark:text-ink-dark hover:bg-track dark:bg-track-dark",
+				day_selected:
+					"bg-amber text-white shadow-[0_3px_8px_rgba(245,165,36,0.4)]",
+				day_today:
+					"!bg-brand text-white shadow-[0_4px_10px_rgba(224,97,62,0.42)]",
+				day_outside: "text-disabled dark:text-disabled-dark font-semibold",
+				day_disabled: "text-disabled dark:text-disabled-dark opacity-60",
+				day_hidden: "invisible",
+				...classNames,
+			}}
+			components={{
+				IconLeft: CalendarIconLeft,
+				IconRight: CalendarIconRight,
+			}}
+			{...props}
+		/>
+	);
 }
 Calendar.displayName = "Calendar";
 

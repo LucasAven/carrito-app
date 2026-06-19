@@ -7,19 +7,6 @@ export const PAYMENT_TYPE_LABELS: Record<PaymentType, string> = {
   mercado_pago: "Mercado Pago",
 } as const;
 
-interface FinancialEntry {
-  hour: string;
-  label: string;
-  type: PaymentType;
-  value: number;
-}
-
-export interface FinancialData {
-  date: string;
-  earnings: FinancialEntry[];
-  expenses: FinancialEntry[];
-}
-
 type Months =
   | "jan"
   | "feb"

@@ -13,7 +13,7 @@ A single record of money in or out. Parent term for either a Sale or an Expense.
 _Avoid_: Transaction, record, item.
 
 **Occurred-on**:
-The calendar day an Entry is booked against. Operator-chosen. Distinct from when the Entry was logged (which is internal, never shown).
+The calendar day an Entry is booked against. Operator-chosen. Distinct from when the Entry was logged (which is internal, never shown). A new Entry defaults its Occurred-on to the day the Operator is currently viewing, not today (see [ADR-0003](./docs/adr/0003-new-entries-default-to-viewed-day.md)).
 _Avoid_: Date, timestamp, when.
 
 **Amount**:

@@ -217,20 +217,20 @@ Port the four query functions currently in `lib/api.ts` to Supabase:
 
 Update this as you go. One line per step.
 
-- [ ] 1. Supabase bootstrap
-- [ ] 2. First migration
-- [ ] 3. Supabase client wiring
-- [ ] 4. Auth flows
-- [ ] 5. Data access layer
-- [ ] 6. Swap `/balance` to Supabase
-- [ ] 7. Create Sale
-- [ ] 8. Create Expense
-- [ ] 9. Edit Entry
-- [ ] 10. Soft delete
-- [ ] 11. Jump-to-date popup
-- [ ] 12. Wire filter drawer
-- [ ] 13. Hide search
-- [ ] 14. Strip stats/calendar from nav
-- [ ] 15. Empty state
-- [ ] 16. Cleanup
+- [x] 1. Supabase bootstrap
+- [x] 2. First migration
+- [x] 3. Supabase client wiring
+- [x] 4. Auth flows
+- [x] 5. Data access layer
+- [x] 6. Swap `/balance` to Supabase
+- [x] 7. Create Sale
+- [x] 8. Create Expense
+- [x] 9. Edit Entry
+- [x] 10. Soft delete
+- [x] 11. Jump-to-date popup
+- [x] 12. Wire filter drawer
+- [x] 13. Hide search
+- [x] 14. Strip stats/calendar from nav
+- [x] 15. Empty state
+- [x] 16. Cleanup
 - [ ] 17. Deploy
