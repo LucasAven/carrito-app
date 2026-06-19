@@ -1,0 +1,89 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+  ],
+  "overrides": [
+    {
+      "files": ["*.js", "*.ts", "*.tsx"],
+      "rules": {
+        "simple-import-sort/imports": [
+          "error",
+          {
+            "groups": [
+              // External packages.
+              ["^react", "^@?\\w"],
+              // Internal packages.
+              [
+                "^(components|constants|contexts|enums|hooks|icons|images|libs|pages|reducers|types|utils)/.+",
+                "^\\.(?!/?$)",
+                "^\\./?$",
+              ],
+            ],
+          },
+        ],
+      },
+    },
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "simple-import-sort",
+    "sort-destructure-keys",
+    "typescript-sort-keys",
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+      },
+    ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-empty-function": [
+      "error",
+      {
+        "allow": ["arrowFunctions"],
+      },
+    ],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "react/jsx-sort-props": [
+      "error",
+      {
+        "reservedFirst": ["key"],
+        "shorthandLast": true,
+      },
+    ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "sort-destructure-keys/sort-destructure-keys": [
+      "error",
+      {
+        "caseSensitive": false,
+      },
+    ],
+    "sort-keys": [
+      "error",
+      "asc",
+      {
+        "caseSensitive": false,
+        "natural": false,
+      },
+    ],
+    "typescript-sort-keys/interface": "error",
+    "typescript-sort-keys/string-enum": "error",
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "always-multiline",
+      },
+    ],
+    "object-curly-spacing": ["error", "always"],
+    "semi": ["error", "always"]
+  }
+}

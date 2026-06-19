@@ -1,0 +1,3 @@
+# Multi-tenant from day one
+
+The app is built initially for one Operator (mom), but a second is already known (aunt with her own food truck) and more are plausible. We picked full multi-tenancy (each Operator sees only their own books) over the simpler single-user model, because adding `user_id` + RLS now is one extra column and one policy, whereas retrofitting tenancy onto six months of accumulated single-user data is a migration plus backfill plus a risk of cross-contamination. We deliberately did NOT go further and model multi-business-per-Operator: one Operator equals one set of books today. See [v2-wishlist](../v2-wishlist.md) for the multi-business option if it becomes load-bearing.

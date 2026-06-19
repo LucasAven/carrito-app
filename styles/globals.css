@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant aria-current (&[aria-current="page"]);
+
+@theme {
+  --color-cost: #a91515;
+  --color-earn: #10652f;
+  --breakpoint-xs: 375px;
+}
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body {
+  @apply min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-900 dark:text-zinc-50;
+}
