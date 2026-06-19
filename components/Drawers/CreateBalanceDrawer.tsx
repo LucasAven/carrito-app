@@ -5,6 +5,7 @@ import { type ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { AmountInput } from "../AmountInput";
+import { ConceptInput } from "../ConceptInput";
 import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { PaymentTypeField } from "../PaymentTypeField";
@@ -12,6 +13,8 @@ import { DrawerBase } from "./DrawerBase";
 
 import { createSale } from "@/app/actions/entries";
 import { getTodaysDate } from "@/utils";
+
+const DEFAULT_SALE_NAME = "Venta";
 
 interface SaleFormValues {
 	date: string;
@@ -37,7 +40,7 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
 			date: getTodaysDate(),
 			paymentType: "cash",
 			saleAmount: "",
-			saleName: "",
+			saleName: DEFAULT_SALE_NAME,
 		},
 	});
 
@@ -79,21 +82,13 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
 					setValue={setValue}
 				/>
 
-				<div>
-					<label
-						className="text-label dark:text-label-dark mb-1.5 block text-[13px] font-extrabold"
-						htmlFor="sale-name"
-					>
-						Concepto
-					</label>
-					<input
-						className="bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark placeholder:text-faint w-full rounded-[14px] px-4 py-3.5 text-[15px] font-semibold shadow-[0_1px_4px_rgba(58,42,34,0.05)] outline-none"
-						id="sale-name"
-						placeholder="Venta de…"
-						type="text"
-						{...register("saleName")}
-					/>
-				</div>
+				<ConceptInput
+					defaultLabel={DEFAULT_SALE_NAME}
+					name="saleName"
+					placeholder="Venta de…"
+					register={register}
+					setValue={setValue}
+				/>
 
 				<div>
 					<label
