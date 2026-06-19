@@ -1,8 +1,9 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: here the IDs are unique */
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
 
 import { AmountInput } from "../AmountInput";
 import { ConceptInput } from "../ConceptInput";
@@ -12,7 +13,7 @@ import { PaymentTypeField } from "../PaymentTypeField";
 import { DrawerBase } from "./DrawerBase";
 
 import { createSale } from "@/app/actions/entries";
-import { getTodaysDate } from "@/utils";
+import { getFiltersFromSearchParams, getTodaysDate } from "@/utils";
 
 const DEFAULT_SALE_NAME = "Venta";
 
@@ -27,6 +28,14 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
 	const [openDrawer, setOpenDrawer] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
+	// New entries default to the day the Operator is looking at (retroactive entry
+	// is the normal workflow). In week/month view there is no single day, so the
+	// filter helper leaves `date` empty and we fall back to today.
+	const searchParams = useSearchParams();
+	const selectedDate =
+		getFiltersFromSearchParams(new URLSearchParams(searchParams.toString()))
+			.date || getTodaysDate();
+
 	const {
 		control,
 		formState: { errors, isSubmitting },
@@ -37,12 +46,25 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
 		setValue,
 	} = useForm<SaleFormValues>({
 		defaultValues: {
-			date: getTodaysDate(),
+			date: selectedDate,
 			paymentType: "cash",
 			saleAmount: "",
 			saleName: DEFAULT_SALE_NAME,
 		},
 	});
+
+	// Re-seed a fresh form (with the currently-viewed date) each time the drawer
+	// opens, so the date follows navigation and stale half-entries don't linger.
+	useEffect(() => {
+		if (openDrawer) {
+			reset({
+				date: selectedDate,
+				paymentType: "cash",
+				saleAmount: "",
+				saleName: DEFAULT_SALE_NAME,
+			});
+		}
+	}, [openDrawer, selectedDate, reset]);
 
 	const onSubmit = async (data: SaleFormValues) => {
 		setSubmitError(null);
@@ -74,7 +96,7 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
 			<form className="flex flex-col gap-3.5" onSubmit={handleSubmit(onSubmit)}>
 				<InputDate
 					acceptFutureDates={false}
-					defaultValue={getTodaysDate()}
+					defaultValue={selectedDate}
 					error={errors.date}
 					name="date"
 					register={register}
