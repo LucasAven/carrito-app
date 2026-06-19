@@ -229,7 +229,7 @@ Update this as you go. One line per step.
 - [x] 10. Soft delete
 - [x] 11. Jump-to-date popup
 - [x] 12. Wire filter drawer
-- [ ] 13. Hide search
+- [x] 13. Hide search
 - [ ] 14. Strip stats/calendar from nav
 - [ ] 15. Empty state
 - [ ] 16. Cleanup
