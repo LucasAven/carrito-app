@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { AmountInput } from "../AmountInput";
 import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { DrawerBase } from "./DrawerBase";
@@ -27,6 +28,7 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
   const [deleting, setDeleting] = useState(false);
 
   const {
+    control,
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
@@ -108,6 +110,7 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
         <InputDate
           acceptFutureDates={false}
           className="gap-2"
+          defaultValue={entry?.occurred_on}
           error={errors.date}
           name="date"
           register={register}
@@ -132,12 +135,11 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
           <label htmlFor="edit-amount">
             <strong>Monto: </strong>
           </label>
-          <input
-            aria-invalid={errors.amount ? "true" : "false"}
+          <AmountInput
+            ariaInvalid={!!errors.amount}
+            control={control}
             id="edit-amount"
-            step="0.01"
-            type="number"
-            {...register("amount", { required: "Campo Requerido" })}
+            name="amount"
           />
           <FormError error={errors.amount} />
         </div>

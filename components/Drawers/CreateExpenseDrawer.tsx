@@ -3,6 +3,7 @@
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { AmountInput } from "../AmountInput";
 import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { DrawerBase } from "./DrawerBase";
@@ -21,6 +22,7 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
+    control,
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
@@ -91,15 +93,11 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
           <label htmlFor="expense-amount">
             <strong>Monto: </strong>
           </label>
-          <input
-            aria-invalid={errors.expenseAmount ? "true" : "false"}
+          <AmountInput
+            ariaInvalid={!!errors.expenseAmount}
+            control={control}
             id="expense-amount"
-            placeholder="0"
-            step="0.01"
-            type="number"
-            {...register("expenseAmount", {
-              required: "Campo Requerido",
-            })}
+            name="expenseAmount"
           />
           <FormError error={errors.expenseAmount} />
         </div>

@@ -19,6 +19,7 @@ type InputDateProps<T extends FieldValues> =
 	| {
 			acceptFutureDates?: boolean;
 			className?: string;
+			defaultValue?: string;
 			error?: FieldError;
 			name: Path<T>;
 			register: UseFormRegister<T>;
@@ -28,6 +29,7 @@ type InputDateProps<T extends FieldValues> =
 	| {
 			acceptFutureDates?: boolean;
 			className?: string;
+			defaultValue?: string;
 			error?: never;
 			name?: never;
 			register?: never;
@@ -35,9 +37,22 @@ type InputDateProps<T extends FieldValues> =
 			setValue?: never;
 	  };
 
+// Accept either YYYY-MM-DD (Postgres date) or dd/MM/yyyy (the display format
+// the picker writes). Returns a Date if it parses cleanly.
+const parseDefault = (value: string | undefined): Date | undefined => {
+	if (!value) return undefined;
+	if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+		const d = new Date(`${value}T00:00:00`);
+		return isValid(d) ? d : undefined;
+	}
+	const d = parse(value, "dd/MM/yyyy", new Date());
+	return isValid(d) ? d : undefined;
+};
+
 export const InputDate = <T extends FieldValues>({
 	acceptFutureDates = true,
 	className = "",
+	defaultValue,
 	error,
 	name,
 	register,
@@ -46,9 +61,24 @@ export const InputDate = <T extends FieldValues>({
 }: InputDateProps<T>) => {
 	const inputId = useId();
 
-	const [month, setMonth] = useState(new Date());
-	const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-	const [inputValue, setInputValue] = useState("");
+	const initialDate = parseDefault(defaultValue);
+	const initialFormatted = initialDate ? format(initialDate, "dd/MM/yyyy") : "";
+
+	const [month, setMonth] = useState(initialDate ?? new Date());
+	const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+		initialDate,
+	);
+	const [inputValue, setInputValue] = useState(initialFormatted);
+
+	// Re-seed when the parent swaps in a new defaultValue (e.g. EditEntryDrawer
+	// opens with a different entry).
+	useEffect(() => {
+		const next = parseDefault(defaultValue);
+		const formatted = next ? format(next, "dd/MM/yyyy") : "";
+		setSelectedDate(next);
+		setInputValue(formatted);
+		if (next) setMonth(next);
+	}, [defaultValue]);
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const dialogRef = useRef<HTMLDialogElement>(null);
