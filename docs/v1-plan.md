@@ -218,7 +218,7 @@ Port the four query functions currently in `lib/api.ts` to Supabase:
 Update this as you go. One line per step.
 
 - [x] 1. Supabase bootstrap
-- [ ] 2. First migration
+- [x] 2. First migration
 - [ ] 3. Supabase client wiring
 - [ ] 4. Auth flows
 - [ ] 5. Data access layer
