@@ -11,13 +11,13 @@ const BottomNav = () => {
 
   return (
     <div className="w-full sm:hidden">
-      <nav className="fixed bottom-0 w-full border-t bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+      <nav className="border-line dark:border-line-dark bg-bg dark:bg-bg-dark fixed bottom-0 w-full border-t">
         <div className="mx-auto flex h-16 max-w-md items-center justify-around px-6">
           {InternalRoutesData.map(({ href, icon, label }) => (
             <Link
               key={label}
               aria-current={pathname.includes(href) ? "page" : undefined}
-              className="flex h-full w-full flex-col items-center justify-center space-y-1 text-zinc-600 hover:text-zinc-900 aria-current:font-bold aria-current:text-indigo-500 dark:text-zinc-400 dark:hover:text-zinc-50 aria-current:dark:text-indigo-400"
+              className="text-muted dark:text-muted-dark aria-current:text-brand flex h-full w-full flex-col items-center justify-center space-y-1 aria-current:font-extrabold"
               href={{
                 pathname: href,
                 query: {
@@ -26,9 +26,7 @@ const BottomNav = () => {
               }}
             >
               {icon}
-              <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                {label}
-              </span>
+              <span className="text-xs">{label}</span>
             </Link>
           ))}
         </div>

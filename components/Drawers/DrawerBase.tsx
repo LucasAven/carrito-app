@@ -1,55 +1,71 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { XIcon } from "lucide-react";
 import { Drawer } from "vaul";
 
 import { cn } from "@/utils/cn";
 
 interface DrawerBaseProps {
-  children: ReactNode;
-  className?: string;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  showCloseButton?: boolean;
-  title?: string;
-  triggerButton: ReactNode;
+	children: ReactNode;
+	className?: string;
+	open: boolean;
+	setOpen: (open: boolean) => void;
+	showCloseButton?: boolean;
+	subtitle?: string;
+	title?: string;
+	triggerButton: ReactNode;
 }
 
 export const DrawerBase: FC<DrawerBaseProps> = ({
-  children,
-  className = "",
-  open,
-  setOpen,
-  showCloseButton = true,
-  title,
-  triggerButton,
+	children,
+	className = "",
+	open,
+	setOpen,
+	showCloseButton = true,
+	subtitle,
+	title,
+	triggerButton,
 }) => (
-  <Drawer.Root onOpenChange={setOpen} open={open}>
-    <Drawer.Trigger asChild>{triggerButton}</Drawer.Trigger>
-    <Drawer.Portal>
-      <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-      <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex flex-col rounded-t-[10px] border bg-zinc-100 p-4 shadow-md dark:border-white/20 dark:bg-[#09090b]">
-        <div className="mx-auto mb-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-zinc-300" />
-        <div className="mx-auto flex w-full max-w-lg flex-col">
-          {title ? (
-            <Drawer.Title className="text-3xl font-medium text-black dark:text-white">
-              {title}
-            </Drawer.Title>
-          ) : null}
+	<Drawer.Root onOpenChange={setOpen} open={open}>
+		<Drawer.Trigger asChild>{triggerButton}</Drawer.Trigger>
+		<Drawer.Portal>
+			<Drawer.Overlay className="fixed inset-0 bg-black/50" />
+			<Drawer.Content className="bg-sheet dark:bg-sheet-dark fixed inset-x-0 bottom-0 mt-24 flex flex-col rounded-t-[30px] px-5 pt-3.5 pb-8 shadow-[0_-10px_40px_rgba(0,0,0,0.25)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.6)]">
+				<div className="mx-auto mb-2.5 h-1.5 w-11 shrink-0 rounded-full bg-[#e0d2c4] dark:bg-[#3a2a1f]" />
+				<div className="mx-auto flex w-full max-w-lg flex-col">
+					{title || showCloseButton ? (
+						<div className="flex items-start justify-between gap-3">
+							<div>
+								{title ? (
+									<Drawer.Title className="font-display text-ink dark:text-ink-dark text-2xl font-extrabold">
+										{title}
+									</Drawer.Title>
+								) : null}
+								{subtitle ? (
+									<p className="text-muted dark:text-muted-dark mt-0.5 text-[13px] font-semibold">
+										{subtitle}
+									</p>
+								) : null}
+							</div>
 
-          {showCloseButton ? (
-            <Drawer.Close className="fixed right-3 top-4" asChild>
-              <button className="rounded-full bg-zinc-500 p-1 text-white dark:bg-transparent">
-                <XIcon className="stroke-current" size={20} />
-              </button>
-            </Drawer.Close>
-          ) : null}
+							{showCloseButton ? (
+								<Drawer.Close asChild>
+									<button
+										aria-label="Cerrar"
+										className="bg-track dark:bg-track-dark text-muted dark:text-muted-dark flex size-8.5 shrink-0 items-center justify-center rounded-full"
+										type="button"
+									>
+										<XIcon className="stroke-[2.4]" size={16} />
+									</button>
+								</Drawer.Close>
+							) : null}
+						</div>
+					) : null}
 
-          <div className={cn("min-h-28 flex-1 p-4 pb-0", className)}>
-            {children}
-          </div>
-        </div>
-      </Drawer.Content>
-      <Drawer.Overlay />
-    </Drawer.Portal>
-  </Drawer.Root>
+					<div className={cn("min-h-28 flex-1 pt-4", className)}>
+						{children}
+					</div>
+				</div>
+			</Drawer.Content>
+		</Drawer.Portal>
+	</Drawer.Root>
 );

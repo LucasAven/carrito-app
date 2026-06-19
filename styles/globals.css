@@ -4,19 +4,60 @@
 @custom-variant aria-current (&[aria-current="page"]);
 
 @theme {
-  --color-cost: #a91515;
-  --color-earn: #10652f;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-baloo), var(--font-nunito), sans-serif;
+
   --breakpoint-xs: 375px;
+
+  /* Accent colors: brand & amber constant; earn/cost brighten in dark mode */
+  --color-brand: #e0613e;
+  --color-earn: #1f9d6b;
+  --color-cost: #d6492e;
+  --color-amber: #f5a524;
+  --color-earn-dark: #34c88a;
+  --color-cost-dark: #ff7e63;
+
+  /* Semantic tokens: light values + explicit `-dark` variants.
+     Apply both with the dark: prefix, e.g. `bg-surface dark:bg-surface-dark`. */
+  --color-bg: #fbf4ea;
+  --color-surface: #ffffff;
+  --color-track: #ede4d9;
+  --color-sheet: #fbf4ea;
+  --color-balance: #3a2a22;
+  --color-badge: #f2eae2;
+
+  --color-ink: #3a2a22;
+  --color-muted: #9a7b68;
+  --color-faint: #bba797;
+  --color-label: #7a6253;
+  --color-disabled: #cdbbac;
+
+  --color-line: #efd9cf;
+
+  --color-bg-dark: #161009;
+  --color-surface-dark: #2e2218;
+  --color-track-dark: #251b13;
+  --color-sheet-dark: #1c140d;
+  --color-balance-dark: #2a1e16;
+  --color-badge-dark: #3d2e22;
+
+  --color-ink-dark: #f5ece2;
+  --color-muted-dark: #b49b89;
+  --color-label-dark: #c7ac99;
+  --color-disabled-dark: #6b5544;
+
+  --color-line-dark: rgba(255, 255, 255, 0.08);
 }
 
 @utility no-scrollbar {
   &::-webkit-scrollbar {
     display: none;
   }
+
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 body {
-  @apply min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-900 dark:text-zinc-50;
+  @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark min-h-screen font-sans antialiased;
 }

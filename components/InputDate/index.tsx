@@ -9,6 +9,7 @@ import type {
 	UseFormSetValue,
 } from "react-hook-form";
 import { format, isValid, parse } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
 import { FormError } from "../FormError";
 
@@ -145,14 +146,17 @@ export const InputDate = <T extends FieldValues>({
 	};
 	return (
 		<div className={cn("flex flex-col", className)}>
-			<label htmlFor={inputId}>
-				<strong>Fecha: </strong>
+			<label
+				className="text-label dark:text-label-dark mb-1.5 block text-[13px] font-extrabold"
+				htmlFor={inputId}
+			>
+				Fecha
 			</label>
 			<div className="relative">
 				<input
-					className="w-full pr-8"
+					className="bg-surface dark:bg-surface-dark text-ink dark:text-ink-dark placeholder:text-faint w-full rounded-[14px] px-4 py-3.5 pr-12 text-[15px] font-semibold shadow-[0_1px_4px_rgba(58,42,34,0.05)] outline-none"
 					id={inputId}
-					placeholder="DD/MM/YYYY"
+					placeholder="DD / MM / AAAA"
 					type="text"
 					value={inputValue}
 					{...(register
@@ -181,16 +185,16 @@ export const InputDate = <T extends FieldValues>({
 					aria-expanded={isDialogOpen}
 					aria-haspopup="dialog"
 					aria-label="Abrir calendario de selección de fecha"
-					className="absolute right-0 top-0 px-2"
+					className="text-brand absolute top-1/2 right-3 -translate-y-1/2"
 					onClick={toggleDialog}
 					type="button"
 				>
-					📆
+					<CalendarIcon size={20} />
 				</button>
 				<FormError error={error} />
 			</div>
 			<dialog
-				className="rounded shadow-2xl"
+				className="bg-sheet dark:bg-sheet-dark text-ink dark:text-ink-dark rounded-2xl p-2 shadow-2xl backdrop:bg-black/40"
 				onClose={() => setIsDialogOpen(false)}
 				onKeyDown={(e) => {
 					if (e.key === "Escape") {

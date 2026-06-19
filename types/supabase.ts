@@ -13,12 +13,12 @@ export type Database = {
     PostgrestVersion: "14.5"
   }
   graphql_public: {
-    Tables: {
+    CompositeTypes: {
       [_ in never]: never
-    }
-    Views: {
+    },
+    Enums: {
       [_ in never]: never
-    }
+    },
     Functions: {
       graphql: {
         Args: {
@@ -30,27 +30,26 @@ export type Database = {
         Returns: Json
       }
     }
-    Enums: {
+    Tables: {
       [_ in never]: never
-    }
-    CompositeTypes: {
+    },
+    Views: {
       [_ in never]: never
     }
   }
   public: {
+    CompositeTypes: {
+      [_ in never]: never
+    },
+    Enums: {
+      entry_kind: "sale" | "expense"
+      payment_type: "cash" | "mercado_pago"
+    },
+    Functions: {
+      [_ in never]: never
+    }
     Tables: {
       entries: {
-        Row: {
-          amount: number
-          created_at: string
-          deleted_at: string | null
-          id: string
-          kind: Database["public"]["Enums"]["entry_kind"]
-          label: string
-          occurred_on: string
-          payment: Database["public"]["Enums"]["payment_type"]
-          user_id: string
-        }
         Insert: {
           amount: number
           created_at?: string
@@ -61,7 +60,27 @@ export type Database = {
           occurred_on: string
           payment: Database["public"]["Enums"]["payment_type"]
           user_id: string
-        }
+        },
+        Relationships: [
+          {
+            columns: ["user_id"],
+            foreignKeyName: "entries_user_id_fkey",
+            isOneToOne: false
+            referencedColumns: ["id"],
+            referencedRelation: "operators"
+          },
+        ],
+        Row: {
+          amount: number
+          created_at: string
+          deleted_at: string | null
+          id: string
+          kind: Database["public"]["Enums"]["entry_kind"]
+          label: string
+          occurred_on: string
+          payment: Database["public"]["Enums"]["payment_type"]
+          user_id: string
+        },
         Update: {
           amount?: number
           created_at?: string
@@ -73,46 +92,27 @@ export type Database = {
           payment?: Database["public"]["Enums"]["payment_type"]
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "entries_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "operators"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       operators: {
-        Row: {
-          created_at: string
-          currency: string
-          id: string
-        }
         Insert: {
           created_at?: string
           currency?: string
           id: string
-        }
+        },
+        Relationships: [],
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+        },
         Update: {
           created_at?: string
           currency?: string
           id?: string
         }
-        Relationships: []
       }
-    }
+    },
     Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      entry_kind: "sale" | "expense"
-      payment_type: "cash" | "mercado_pago"
-    }
-    CompositeTypes: {
       [_ in never]: never
     }
   }
@@ -245,4 +245,4 @@ export const Constants = {
       payment_type: ["cash", "mercado_pago"],
     },
   },
-} as const
+} as const;
