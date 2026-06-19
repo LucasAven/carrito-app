@@ -227,7 +227,7 @@ Update this as you go. One line per step.
 - [x] 8. Create Expense
 - [x] 9. Edit Entry
 - [x] 10. Soft delete
-- [ ] 11. Jump-to-date popup
+- [x] 11. Jump-to-date popup
 - [ ] 12. Wire filter drawer
 - [ ] 13. Hide search
 - [ ] 14. Strip stats/calendar from nav
