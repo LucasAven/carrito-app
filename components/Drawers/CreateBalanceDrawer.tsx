@@ -7,17 +7,27 @@ import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { DrawerBase } from "./DrawerBase";
 
-// TODO: add create balance mutation (currently submit button does nothing)
+import { createSale } from "@/app/actions/entries";
+
+interface SaleFormValues {
+  date: string;
+  paymentType: string;
+  saleAmount: string;
+  saleName: string;
+}
+
 export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
     register,
+    reset,
     setError,
     setValue,
-  } = useForm({
+  } = useForm<SaleFormValues>({
     defaultValues: {
       date: "",
       paymentType: "",
@@ -26,13 +36,22 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
     },
   });
 
-  const onSubmit = (data: {
-    date: string;
-    paymentType: string;
-    saleAmount: string;
-    saleName: string;
-  }) => {
-    console.log(data);
+  const onSubmit = async (data: SaleFormValues) => {
+    setSubmitError(null);
+    const result = await createSale({
+      amount: data.saleAmount,
+      date: data.date,
+      label: data.saleName,
+      paymentType: data.paymentType,
+    });
+
+    if (result.error) {
+      setSubmitError(result.error);
+      return;
+    }
+
+    reset();
+    setOpenDrawer(false);
   };
 
   return (
@@ -111,7 +130,12 @@ export function CreateBalanceDrawer({ children }: { children: ReactNode }) {
           </fieldset>
           <FormError error={errors.paymentType} />
         </div>
-        <button type="submit">Crear</button>
+
+        {submitError && <p className="text-sm text-cost">{submitError}</p>}
+
+        <button disabled={isSubmitting} type="submit">
+          {isSubmitting ? "Creando…" : "Crear"}
+        </button>
       </form>
     </DrawerBase>
   );

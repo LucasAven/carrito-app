@@ -223,7 +223,7 @@ Update this as you go. One line per step.
 - [x] 4. Auth flows
 - [x] 5. Data access layer
 - [x] 6. Swap `/balance` to Supabase
-- [ ] 7. Create Sale
+- [x] 7. Create Sale
 - [ ] 8. Create Expense
 - [ ] 9. Edit Entry
 - [ ] 10. Soft delete
