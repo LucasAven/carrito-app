@@ -232,5 +232,5 @@ Update this as you go. One line per step.
 - [x] 13. Hide search
 - [x] 14. Strip stats/calendar from nav
 - [x] 15. Empty state
-- [ ] 16. Cleanup
+- [x] 16. Cleanup
 - [ ] 17. Deploy

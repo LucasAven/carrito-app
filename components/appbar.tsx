@@ -23,8 +23,8 @@ const Appbar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="fixed left-0 top-0 z-20 w-full bg-zinc-900 pt-safe">
-      <header className="border-b bg-zinc-100 px-safe dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="fixed left-0 top-0 z-20 w-full bg-zinc-900">
+      <header className="border-b bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mx-auto flex h-20 w-full max-w-screen-md items-center justify-between px-6">
           <Link className="whitespace-nowrap pr-3 max-sm:w-full" href="/">
             <h1 className="text-2xl font-medium xs:text-3xl">Mi Negocio</h1>

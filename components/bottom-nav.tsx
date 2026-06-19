@@ -11,7 +11,7 @@ const BottomNav = () => {
 
   return (
     <div className="w-full sm:hidden">
-      <nav className="fixed bottom-0 w-full border-t bg-zinc-100 pb-safe dark:border-zinc-800 dark:bg-zinc-900">
+      <nav className="fixed bottom-0 w-full border-t bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mx-auto flex h-16 max-w-md items-center justify-around px-6">
           {InternalRoutesData.map(({ href, icon, label }) => (
             <Link
