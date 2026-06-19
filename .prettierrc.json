@@ -1,6 +1,7 @@
 {
-  "trailingComma": "all",
-  "semi": true,
-  "bracketSpacing": true,
-  "plugins": ["prettier-plugin-tailwindcss"]
+	"trailingComma": "all",
+	"useTabs": true,
+	"semi": true,
+	"bracketSpacing": true,
+	"plugins": ["prettier-plugin-tailwindcss"]
 }
