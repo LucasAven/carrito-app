@@ -1,5 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest,NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+
+const PUBLIC_ROUTES = ["/login", "/signup", "/auth"];
+
+const isPublicRoute = (pathname: string) =>
+  PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -27,7 +32,17 @@ export async function updateSession(request: NextRequest) {
 
   // Refreshes the session cookie. Do not run logic between createServerClient
   // and getUser, per Supabase SSR docs, to avoid auth/session race conditions.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+
+  if (!user && !isPublicRoute(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }
