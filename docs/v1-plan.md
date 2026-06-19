@@ -221,7 +221,7 @@ Update this as you go. One line per step.
 - [x] 2. First migration
 - [x] 3. Supabase client wiring
 - [x] 4. Auth flows
-- [ ] 5. Data access layer
+- [x] 5. Data access layer
 - [ ] 6. Swap `/balance` to Supabase
 - [ ] 7. Create Sale
 - [ ] 8. Create Expense
