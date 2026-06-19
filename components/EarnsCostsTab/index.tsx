@@ -3,6 +3,7 @@
 import { FC, useState } from "react";
 import { format } from "date-fns/format";
 
+import { EditEntryDrawer } from "@/components/Drawers/EditEntryDrawer";
 import { Entry } from "@/lib/db/entries";
 import { PAYMENT_TYPE_LABELS } from "@/types/balance";
 import { cn } from "@/utils/cn";
@@ -23,11 +24,13 @@ const TabPanel = ({
   entries,
   isEarnTab,
   isSelected,
+  onEntryClick,
 }: {
   ariaLabelledBy: string;
   entries: Entry[];
   isEarnTab: boolean;
   isSelected: boolean;
+  onEntryClick: (entry: Entry) => void;
 }) => (
   <div
     aria-hidden={!isSelected}
@@ -38,23 +41,31 @@ const TabPanel = ({
   >
     <ul className="grid grid-cols-1 gap-4 pb-12">
       {entries.map((entry) => (
-        <li key={entry.id} className="flex flex-col">
-          <div className="flex justify-between text-xl font-bold">
-            <span className="truncate">{entry.label}</span>
-            <span
-              className={cn(
-                "whitespace-nowrap",
-                isEarnTab ? "text-earn" : "text-cost",
-              )}
-            >
-              {isEarnTab ? formatAmount(entry.amount) : `- ${formatAmount(entry.amount)}`}
-            </span>
-          </div>
-          <div className="flex gap-1 text-sm">
-            <span>{PAYMENT_TYPE_LABELS[entry.payment]}</span>
-            <span>-</span>
-            <span>{format(new Date(entry.occurred_on), "dd 'de' MMM")}</span>
-          </div>
+        <li key={entry.id}>
+          <button
+            className="flex w-full flex-col text-left"
+            onClick={() => onEntryClick(entry)}
+            type="button"
+          >
+            <div className="flex justify-between text-xl font-bold">
+              <span className="truncate">{entry.label}</span>
+              <span
+                className={cn(
+                  "whitespace-nowrap",
+                  isEarnTab ? "text-earn" : "text-cost",
+                )}
+              >
+                {isEarnTab
+                  ? formatAmount(entry.amount)
+                  : `- ${formatAmount(entry.amount)}`}
+              </span>
+            </div>
+            <div className="flex gap-1 text-sm">
+              <span>{PAYMENT_TYPE_LABELS[entry.payment]}</span>
+              <span>-</span>
+              <span>{format(new Date(entry.occurred_on), "dd 'de' MMM")}</span>
+            </div>
+          </button>
         </li>
       ))}
     </ul>
@@ -63,6 +74,7 @@ const TabPanel = ({
 
 const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries }) => {
   const [selectedTab, setSelectedTab] = useState(0);
+  const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
   const earnings = entries.filter((entry) => entry.kind === "sale");
   const expenses = entries.filter((entry) => entry.kind === "expense");
@@ -99,6 +111,7 @@ const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries }) => {
         ariaLabelledBy="trigger-earnings"
         entries={earnings}
         isSelected={selectedTab === 0}
+        onEntryClick={setEditingEntry}
         isEarnTab
       />
 
@@ -107,6 +120,12 @@ const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries }) => {
         entries={expenses}
         isEarnTab={false}
         isSelected={selectedTab === 1}
+        onEntryClick={setEditingEntry}
+      />
+
+      <EditEntryDrawer
+        entry={editingEntry}
+        onClose={() => setEditingEntry(null)}
       />
     </div>
   );

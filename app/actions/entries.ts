@@ -67,3 +67,42 @@ export async function createSale(input: CreateEntryInput): Promise<ActionResult>
 export async function createExpense(input: CreateEntryInput): Promise<ActionResult> {
   return createEntry(input, "expense");
 }
+
+export interface UpdateEntryInput {
+  amount: string | number;
+  date: string;
+  label: string;
+  paymentType: string;
+}
+
+export async function updateEntry(
+  id: string,
+  patch: UpdateEntryInput,
+): Promise<ActionResult> {
+  if (!id) return { error: "Falta el id" };
+  if (!patch.date) return { error: "Falta la fecha" };
+  if (!patch.label?.trim()) return { error: "Falta el concepto" };
+
+  const amount = parseAmount(patch.amount);
+  if (amount === null) return { error: "Monto inválido" };
+
+  if (!isPaymentType(patch.paymentType)) {
+    return { error: "Forma de pago inválida" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("entries")
+    .update({
+      amount,
+      label: patch.label.trim(),
+      occurred_on: patch.date,
+      payment: patch.paymentType,
+    })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/balance");
+  return {};
+}

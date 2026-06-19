@@ -225,7 +225,7 @@ Update this as you go. One line per step.
 - [x] 6. Swap `/balance` to Supabase
 - [x] 7. Create Sale
 - [x] 8. Create Expense
-- [ ] 9. Edit Entry
+- [x] 9. Edit Entry
 - [ ] 10. Soft delete
 - [ ] 11. Jump-to-date popup
 - [ ] 12. Wire filter drawer
