@@ -7,14 +7,13 @@ import EarnsCostsTab from "@/components/EarnsCostsTab";
 import Section from "@/components/section";
 import { InternalRoutes, URL_FILTERS } from "@/constants/routes";
 import {
-  getBalanceFromDate,
-  getBalanceFromMonth,
-  getBalanceFromWeekRange,
-  getFinancialDataByWeekRange,
-  getFinancialDataFromDate,
-  getFinancialDataFromMonth,
-} from "@/lib/api";
-import { FinancialData, MonthFilter } from "@/types/balance";
+  Entry,
+  EntryTotals,
+  listEntriesByDate,
+  listEntriesByMonth,
+  listEntriesByWeek,
+  summarizeEntries,
+} from "@/lib/db/entries";
 import {
   convertUrlWeekRangeToWeeksDates,
   getFiltersFromSearchParams,
@@ -24,46 +23,29 @@ import {
   getYearInWeekRanges,
 } from "@/utils";
 
-async function getFinancialDataAndBalance(
+async function loadEntries(
   searchParams: URLSearchParams,
-): Promise<{
-  data: FinancialData | FinancialData[];
-  earnings: number;
-  expenses: number;
-  total: number;
-}> {
+): Promise<{ entries: Entry[] } & EntryTotals> {
   const date = searchParams.get(URL_FILTERS.DATE) ?? "";
   const week = searchParams.get(URL_FILTERS.WEEK) ?? "";
   const month = searchParams.get(URL_FILTERS.MONTH) ?? "";
   const filters = getFiltersFromSearchParams(searchParams);
+  const options = { paymentTypes: filters.paymentTypes };
 
-  const weekRange = convertUrlWeekRangeToWeeksDates(week);
-
-  let data, earnings, expenses, total;
+  let entries: Entry[] = [];
 
   if (date) {
-    data = await getFinancialDataFromDate(date, filters);
-    ({ earnings, expenses, total } = await getBalanceFromDate(date, filters));
+    entries = await listEntriesByDate(date, options);
   } else if (week) {
-    data = await getFinancialDataByWeekRange(
-      weekRange?.weekStart?.toISOString(),
-      weekRange?.weekEnd?.toISOString(),
-      filters,
-    );
-    ({ earnings, expenses, total } = await getBalanceFromWeekRange(
-      weekRange?.weekStart?.toISOString(),
-      weekRange?.weekEnd?.toISOString(),
-      filters,
-    ));
-  } else {
-    data = await getFinancialDataFromMonth(month as MonthFilter, filters);
-    ({ earnings, expenses, total } = await getBalanceFromMonth(
-      month as MonthFilter,
-      filters,
-    ));
+    const weekRange = convertUrlWeekRangeToWeeksDates(week);
+    const start = weekRange?.weekStart?.toISOString().split("T")[0];
+    const end = weekRange?.weekEnd?.toISOString().split("T")[0];
+    entries = await listEntriesByWeek(start, end, options);
+  } else if (month) {
+    entries = await listEntriesByMonth(month, options);
   }
 
-  return { data, earnings, expenses, total };
+  return { entries, ...summarizeEntries(entries) };
 }
 
 export default async function BalancePage({
@@ -145,7 +127,7 @@ export default async function BalancePage({
   }
 
   const convertedSearchParams = new URLSearchParams(resolvedSearchParams);
-  const { data, earnings, expenses, total } = await getFinancialDataAndBalance(
+  const { earnings, entries, expenses, total } = await loadEntries(
     convertedSearchParams,
   );
 
@@ -156,7 +138,7 @@ export default async function BalancePage({
           <Balance earnings={earnings} expenses={expenses} total={total} />
         </Suspense>
         <Suspense fallback={<div>Loading Earn...</div>}>
-          <EarnsCostsTab data={data} />
+          <EarnsCostsTab entries={entries} />
         </Suspense>
       </div>
     </Section>

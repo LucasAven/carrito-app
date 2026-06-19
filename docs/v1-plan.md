@@ -222,7 +222,7 @@ Update this as you go. One line per step.
 - [x] 3. Supabase client wiring
 - [x] 4. Auth flows
 - [x] 5. Data access layer
-- [ ] 6. Swap `/balance` to Supabase
+- [x] 6. Swap `/balance` to Supabase
 - [ ] 7. Create Sale
 - [ ] 8. Create Expense
 - [ ] 9. Edit Entry

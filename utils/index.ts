@@ -19,7 +19,6 @@ import {
 import { URL_FILTERS } from "@/constants/routes";
 import {
   BalanceFilters,
-  FinancialData,
   MonthFilter,
   PAYMENT_TYPES,
   PaymentType,
@@ -162,18 +161,6 @@ export const getTwelveMonthsFromNow = () => {
   });
 
   return months.map((month) => format(month, "MMM-yyyy").toLowerCase());
-};
-
-export const getEarnings = (todayData: FinancialData | undefined) => {
-  return todayData?.earnings.reduce((acc, entry) => acc + entry.value, 0) ?? 0;
-};
-
-export const getExpenses = (todayData: FinancialData | undefined) => {
-  return todayData?.expenses.reduce((acc, entry) => acc + entry.value, 0) ?? 0;
-};
-
-export const getTotal = (earnings: number, expenses: number) => {
-  return earnings - expenses;
 };
 
 /**

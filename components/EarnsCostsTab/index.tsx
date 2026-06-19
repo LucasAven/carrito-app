@@ -3,21 +3,29 @@
 import { FC, useState } from "react";
 import { format } from "date-fns/format";
 
-import { FinancialData, PAYMENT_TYPE_LABELS } from "@/types/balance";
+import { Entry } from "@/lib/db/entries";
+import { PAYMENT_TYPE_LABELS } from "@/types/balance";
 import { cn } from "@/utils/cn";
 
 interface EarnsCostsTabProps {
-  data: FinancialData | FinancialData[];
+  entries: Entry[];
 }
+
+const formatAmount = (value: number) =>
+  new Intl.NumberFormat("es-AR", {
+    currency: "ARS",
+    maximumFractionDigits: 0,
+    style: "currency",
+  }).format(value);
 
 const TabPanel = ({
   ariaLabelledBy,
-  data,
+  entries,
   isEarnTab,
   isSelected,
 }: {
   ariaLabelledBy: string;
-  data: FinancialData["earnings" | "expenses"];
+  entries: Entry[];
   isEarnTab: boolean;
   isSelected: boolean;
 }) => (
@@ -29,8 +37,8 @@ const TabPanel = ({
     tabIndex={0}
   >
     <ul className="grid grid-cols-1 gap-4 pb-12">
-      {data.map((entry) => (
-        <li key={`${entry.label}-${entry.hour}`} className="flex flex-col">
+      {entries.map((entry) => (
+        <li key={entry.id} className="flex flex-col">
           <div className="flex justify-between text-xl font-bold">
             <span className="truncate">{entry.label}</span>
             <span
@@ -39,15 +47,13 @@ const TabPanel = ({
                 isEarnTab ? "text-earn" : "text-cost",
               )}
             >
-              {isEarnTab ? `$ ${entry.value}` : `- $ ${entry.value}`}
+              {isEarnTab ? formatAmount(entry.amount) : `- ${formatAmount(entry.amount)}`}
             </span>
           </div>
           <div className="flex gap-1 text-sm">
-            <span>{PAYMENT_TYPE_LABELS[entry.type]}</span>
+            <span>{PAYMENT_TYPE_LABELS[entry.payment]}</span>
             <span>-</span>
-            <span>
-              {format(new Date(entry.hour), "dd 'de' MMM '-' HH:mm aaa")}
-            </span>
+            <span>{format(new Date(entry.occurred_on), "dd 'de' MMM")}</span>
           </div>
         </li>
       ))}
@@ -55,16 +61,11 @@ const TabPanel = ({
   </div>
 );
 
-const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ data }) => {
+const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries }) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const earnings: FinancialData["earnings"] = Array.isArray(data)
-    ? data.map((entry) => entry.earnings).flat()
-    : data.earnings;
-
-  const expenses: FinancialData["expenses"] = Array.isArray(data)
-    ? data.map((entry) => entry.expenses).flat()
-    : data.expenses;
+  const earnings = entries.filter((entry) => entry.kind === "sale");
+  const expenses = entries.filter((entry) => entry.kind === "expense");
 
   return (
     <div>
@@ -96,14 +97,14 @@ const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ data }) => {
 
       <TabPanel
         ariaLabelledBy="trigger-earnings"
-        data={earnings}
+        entries={earnings}
         isSelected={selectedTab === 0}
         isEarnTab
       />
 
       <TabPanel
         ariaLabelledBy="trigger-expenses"
-        data={expenses}
+        entries={expenses}
         isEarnTab={false}
         isSelected={selectedTab === 1}
       />
