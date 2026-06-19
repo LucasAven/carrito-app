@@ -7,7 +7,7 @@ import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { DrawerBase } from "./DrawerBase";
 
-import { updateEntry } from "@/app/actions/entries";
+import { deleteEntry, updateEntry } from "@/app/actions/entries";
 import { Entry } from "@/lib/db/entries";
 
 interface EditEntryDrawerProps {
@@ -24,6 +24,7 @@ interface EntryFormValues {
 
 export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const {
     formState: { errors, isSubmitting },
@@ -67,6 +68,26 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
       return;
     }
 
+    onClose();
+  };
+
+  const onDelete = async () => {
+    if (!entry) return;
+    const confirmMessage =
+      entry.kind === "expense"
+        ? "¿Eliminar este gasto?"
+        : "¿Eliminar esta venta?";
+    if (!window.confirm(confirmMessage)) return;
+
+    setDeleting(true);
+    setSubmitError(null);
+    const result = await deleteEntry(entry.id);
+    if (result.error) {
+      setSubmitError(result.error);
+      setDeleting(false);
+      return;
+    }
+    setDeleting(false);
     onClose();
   };
 
@@ -153,8 +174,17 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
 
         {submitError && <p className="text-sm text-cost">{submitError}</p>}
 
-        <button disabled={isSubmitting} type="submit">
+        <button disabled={isSubmitting || deleting} type="submit">
           {isSubmitting ? "Guardando…" : "Guardar"}
+        </button>
+
+        <button
+          className="mt-4 rounded-md bg-cost px-3 py-2 font-semibold text-white disabled:opacity-50"
+          disabled={isSubmitting || deleting}
+          onClick={onDelete}
+          type="button"
+        >
+          {deleting ? "Eliminando…" : "Eliminar"}
         </button>
       </form>
     </DrawerBase>

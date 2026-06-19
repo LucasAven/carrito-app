@@ -106,3 +106,18 @@ export async function updateEntry(
   revalidatePath("/balance");
   return {};
 }
+
+export async function deleteEntry(id: string): Promise<ActionResult> {
+  if (!id) return { error: "Falta el id" };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("entries")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/balance");
+  return {};
+}
