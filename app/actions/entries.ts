@@ -1,5 +1,6 @@
 "use server";
 
+import { format, isValid, parse } from "date-fns";
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
@@ -7,7 +8,7 @@ import { PAYMENT_TYPES, PaymentType } from "@/types/balance";
 
 export interface CreateEntryInput {
   amount: string | number;
-  date: string;
+  date: Date | string;
   label: string;
   paymentType: string;
 }
@@ -25,11 +26,24 @@ const parseAmount = (value: string | number): number | null => {
 const isPaymentType = (value: string): value is PaymentType =>
   (PAYMENT_TYPES as readonly string[]).includes(value);
 
+// InputDate writes either a "dd/MM/yyyy" string (calendar picker) or a Date
+// (typed input). Postgres `date` wants YYYY-MM-DD. Normalize at the boundary.
+const toIsoDate = (value: Date | string): string | null => {
+  if (value instanceof Date) {
+    return isValid(value) ? format(value, "yyyy-MM-dd") : null;
+  }
+  if (typeof value !== "string" || !value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parsed = parse(value, "dd/MM/yyyy", new Date());
+  return isValid(parsed) ? format(parsed, "yyyy-MM-dd") : null;
+};
+
 async function createEntry(
   input: CreateEntryInput,
   kind: "sale" | "expense",
 ): Promise<ActionResult> {
-  if (!input.date) return { error: "Falta la fecha" };
+  const occurredOn = toIsoDate(input.date);
+  if (!occurredOn) return { error: "Falta la fecha" };
   if (!input.label?.trim()) return { error: "Falta el concepto" };
 
   const amount = parseAmount(input.amount);
@@ -49,7 +63,7 @@ async function createEntry(
     amount,
     kind,
     label: input.label.trim(),
-    occurred_on: input.date,
+    occurred_on: occurredOn,
     payment: input.paymentType,
     user_id: user.id,
   });
@@ -70,7 +84,7 @@ export async function createExpense(input: CreateEntryInput): Promise<ActionResu
 
 export interface UpdateEntryInput {
   amount: string | number;
-  date: string;
+  date: Date | string;
   label: string;
   paymentType: string;
 }
@@ -80,7 +94,8 @@ export async function updateEntry(
   patch: UpdateEntryInput,
 ): Promise<ActionResult> {
   if (!id) return { error: "Falta el id" };
-  if (!patch.date) return { error: "Falta la fecha" };
+  const occurredOn = toIsoDate(patch.date);
+  if (!occurredOn) return { error: "Falta la fecha" };
   if (!patch.label?.trim()) return { error: "Falta el concepto" };
 
   const amount = parseAmount(patch.amount);
@@ -96,7 +111,7 @@ export async function updateEntry(
     .update({
       amount,
       label: patch.label.trim(),
-      occurred_on: patch.date,
+      occurred_on: occurredOn,
       payment: patch.paymentType,
     })
     .eq("id", id);
