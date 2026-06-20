@@ -61,3 +61,13 @@
 body {
   @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark min-h-screen font-sans antialiased;
 }
+
+/* Native-app feel: kill focus rings and the mobile tap-highlight flash. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+*:focus,
+*:focus-visible {
+  outline: none;
+}

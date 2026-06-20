@@ -1,14 +1,19 @@
 "use client";
 
 import {
+	LogOutIcon,
 	ShoppingBagIcon,
 	SlidersHorizontalIcon,
 	SmartphoneIcon,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { FilterDrawer } from "@/components/Drawers";
+import { FilterDrawer, LogoutDrawer } from "@/components/Drawers";
+
+// Auth routes have no session, so the logout control is meaningless there.
+const AUTH_PREFIXES = ["/login", "/signup"];
 
 const ThemeSwitch = dynamic(() => import("./ThemeSwitch"), {
 	loading: () => (
@@ -18,6 +23,9 @@ const ThemeSwitch = dynamic(() => import("./ThemeSwitch"), {
 });
 
 const Appbar = () => {
+	const pathname = usePathname();
+	const onAuthPage = AUTH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+
 	return (
 		<div className="bg-bg dark:bg-bg-dark fixed top-0 left-0 z-20 w-full">
 			<header className="bg-bg dark:bg-bg-dark">
@@ -49,6 +57,17 @@ const Appbar = () => {
 								<SlidersHorizontalIcon size={18} />
 							</button>
 						</FilterDrawer>
+						{!onAuthPage && (
+							<LogoutDrawer>
+								<button
+									aria-label="Cerrar sesión"
+									className="bg-surface dark:bg-surface-dark text-muted dark:text-muted-dark flex size-9.5 items-center justify-center rounded-full shadow-[0_2px_7px_rgba(58,42,34,0.1)]"
+									type="button"
+								>
+									<LogOutIcon size={18} />
+								</button>
+							</LogoutDrawer>
+						)}
 					</div>
 				</div>
 			</header>
