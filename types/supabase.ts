@@ -46,9 +46,57 @@ export type Database = {
       payment_type: "cash" | "mercado_pago"
     },
     Functions: {
-      [_ in never]: never
+      create_entry_via_token: {
+        Args: {
+          p_amount: number
+          p_kind: Database["public"]["Enums"]["entry_kind"]
+          p_label: string
+          p_occurred_on: string
+          p_payment: Database["public"]["Enums"]["payment_type"]
+          p_token: string
+        }
+        Returns: Database["public"]["Tables"]["entries"]["Row"]
+      }
     }
     Tables: {
+      api_tokens: {
+        Insert: {
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          name?: string | null
+          operator_id: string
+          revoked_at?: string | null
+          token_hash: string
+        },
+        Relationships: [
+          {
+            columns: ["operator_id"],
+            foreignKeyName: "api_tokens_operator_id_fkey",
+            isOneToOne: false
+            referencedColumns: ["id"],
+            referencedRelation: "operators"
+          },
+        ],
+        Row: {
+          created_at: string
+          id: string
+          last_used_at: string | null
+          name: string | null
+          operator_id: string
+          revoked_at: string | null
+          token_hash: string
+        },
+        Update: {
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          name?: string | null
+          operator_id?: string
+          revoked_at?: string | null
+          token_hash?: string
+        }
+      }
       entries: {
         Insert: {
           amount: number

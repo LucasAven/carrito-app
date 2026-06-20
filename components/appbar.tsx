@@ -1,6 +1,10 @@
 "use client";
 
-import { ShoppingBagIcon, SlidersHorizontalIcon } from "lucide-react";
+import {
+	ShoppingBagIcon,
+	SlidersHorizontalIcon,
+	SmartphoneIcon,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
@@ -29,6 +33,13 @@ const Appbar = () => {
 
 					<div className="flex items-center gap-2">
 						<ThemeSwitch />
+						<Link
+							aria-label="Conectar con Siri"
+							className="bg-surface dark:bg-surface-dark text-muted dark:text-muted-dark flex size-9.5 items-center justify-center rounded-full shadow-[0_2px_7px_rgba(58,42,34,0.1)]"
+							href="/conectar-siri"
+						>
+							<SmartphoneIcon size={18} />
+						</Link>
 						<FilterDrawer>
 							<button
 								aria-label="Filtros"

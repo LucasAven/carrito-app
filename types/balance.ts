@@ -7,6 +7,10 @@ export const PAYMENT_TYPE_LABELS: Record<PaymentType, string> = {
   mercado_pago: "Mercado Pago",
 } as const;
 
+export const ENTRY_KINDS = ["sale", "expense"] as const;
+
+export type EntryKind = (typeof ENTRY_KINDS)[number];
+
 type Months =
   | "jan"
   | "feb"

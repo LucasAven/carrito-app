@@ -1,10 +1,15 @@
 "use server";
 
-import { format, isValid, parse } from "date-fns";
 import { revalidatePath } from "next/cache";
 
+import {
+	isPaymentType,
+	labelForKind,
+	parseAmount,
+	toIsoDate,
+} from "@/lib/entries/normalize";
 import { createClient } from "@/lib/supabase/server";
-import { PAYMENT_TYPES, type PaymentType } from "@/types/balance";
+import type { EntryKind } from "@/types/balance";
 
 export interface CreateEntryInput {
 	amount: string | number;
@@ -17,36 +22,14 @@ interface ActionResult {
 	error?: string;
 }
 
-const parseAmount = (value: string | number): number | null => {
-	const n = typeof value === "number" ? value : Number(value);
-	if (!Number.isFinite(n) || n < 0) return null;
-	return n;
-};
-
-const isPaymentType = (value: string): value is PaymentType =>
-	(PAYMENT_TYPES as readonly string[]).includes(value);
-
-// InputDate writes either a "dd/MM/yyyy" string (calendar picker) or a Date
-// (typed input). Postgres `date` wants YYYY-MM-DD. Normalize at the boundary.
-const toIsoDate = (value: Date | string): string | null => {
-	if (value instanceof Date) {
-		return isValid(value) ? format(value, "yyyy-MM-dd") : null;
-	}
-	if (typeof value !== "string" || !value) return null;
-	if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
-	const parsed = parse(value, "dd/MM/yyyy", new Date());
-	return isValid(parsed) ? format(parsed, "yyyy-MM-dd") : null;
-};
-
 async function createEntry(
 	input: CreateEntryInput,
-	kind: "sale" | "expense",
+	kind: EntryKind,
 ): Promise<ActionResult> {
 	const occurredOn = toIsoDate(input.date);
 	if (!occurredOn) return { error: "Falta la fecha" };
 
-	const trimmedLabel = input.label?.trim();
-	const label = trimmedLabel || (kind === "sale" ? "Venta" : "Gasto");
+	const label = labelForKind(input.label, kind);
 
 	const amount = parseAmount(input.amount);
 	if (amount === null) return { error: "Monto inválido" };
