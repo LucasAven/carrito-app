@@ -16,19 +16,22 @@ export const parseAmount = (value: string | number): number | null => {
 	return n;
 };
 
-// Siri dictation hands us free text in es-AR, where "." groups thousands and
-// "," is the decimal separator, often with noise: "161.000", "1.500,50",
-// "$161.000", "161000 pesos". Strip everything but digits and separators, drop
-// the thousands dots, turn the decimal comma into a dot, then validate. Keeps a
-// plain number (or clean numeric string) working unchanged.
+// Siri dictation hands us free text where "," groups thousands and "." is the
+// decimal separator, often with noise: "161,000", "1,500.50", "$161,000",
+// "161000 pesos". It also dictates a spoken decimal as the word "con" ("ciento
+// sesenta y un mil cuatrocientos cincuenta con treinta y siete" -> "161,450 con
+// 37"), so fold that into a decimal point first. Then strip everything but
+// digits and separators, drop the thousands commas, keep the decimal dot, and
+// validate. Keeps a plain number (or clean numeric string) working unchanged.
 export const parseSpokenAmount = (value: string | number): number | null => {
 	if (typeof value === "number") return parseAmount(value);
 	if (typeof value !== "string") return null;
 
-	const digitsAndSeparators = value.replace(/[^\d.,]/g, "");
+	const withSpokenDecimal = value.replace(/\bcon\b/gi, ".");
+	const digitsAndSeparators = withSpokenDecimal.replace(/[^\d.,]/g, "");
 	if (!digitsAndSeparators) return null;
 
-	const normalized = digitsAndSeparators.replace(/\./g, "").replace(/,/g, ".");
+	const normalized = digitsAndSeparators.replace(/,/g, "");
 	return parseAmount(normalized);
 };
 
