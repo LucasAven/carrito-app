@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_ROUTES = ["/login", "/signup", "/auth"];
+// /api/shortcut is authenticated by a personal bearer token inside the route
+// handler, not by a session cookie, so the middleware must not redirect it to
+// /login.
+const PUBLIC_ROUTES = ["/login", "/signup", "/auth", "/api/shortcut"];
 
 const isPublicRoute = (pathname: string) =>
   PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
