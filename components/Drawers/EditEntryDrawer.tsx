@@ -11,13 +11,14 @@ import { InputDate } from "../InputDate";
 import { PaymentTypeField } from "../PaymentTypeField";
 import { DrawerBase } from "./DrawerBase";
 
-import { deleteEntry, updateEntry } from "@/app/actions/entries";
+import { updateEntry } from "@/app/actions/entries";
 import type { Entry } from "@/lib/db/entries";
 import { cn } from "@/utils/cn";
 
 interface EditEntryDrawerProps {
 	entry: Entry | null;
 	onClose: () => void;
+	onDelete: (entry: Entry) => void;
 }
 
 interface EntryFormValues {
@@ -27,9 +28,12 @@ interface EntryFormValues {
 	paymentType: string;
 }
 
-export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
+export function EditEntryDrawer({
+	entry,
+	onClose,
+	onDelete,
+}: EditEntryDrawerProps) {
 	const [submitError, setSubmitError] = useState<string | null>(null);
-	const [deleting, setDeleting] = useState(false);
 
 	const {
 		control,
@@ -77,24 +81,11 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
 		onClose();
 	};
 
-	const onDelete = async () => {
+	// The parent owns deletion so it can drop the row optimistically and surface
+	// the undo toast; the drawer just signals intent and gets closed from above.
+	const handleDelete = () => {
 		if (!entry) return;
-		const confirmMessage =
-			entry.kind === "expense"
-				? "¿Eliminar este gasto?"
-				: "¿Eliminar esta venta?";
-		if (!window.confirm(confirmMessage)) return;
-
-		setDeleting(true);
-		setSubmitError(null);
-		const result = await deleteEntry(entry.id);
-		if (result.error) {
-			setSubmitError(result.error);
-			setDeleting(false);
-			return;
-		}
-		setDeleting(false);
-		onClose();
+		onDelete(entry);
 	};
 
 	const isOpen = entry !== null;
@@ -178,12 +169,12 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
 				<div className="mt-2 flex gap-2.5">
 					<button
 						className="border-line dark:border-line-dark bg-surface dark:bg-surface-dark font-display text-cost flex flex-1 items-center justify-center gap-1.5 rounded-2xl border-2 py-4 text-base font-bold disabled:opacity-60"
-						disabled={isSubmitting || deleting}
-						onClick={onDelete}
+						disabled={isSubmitting}
+						onClick={handleDelete}
 						type="button"
 					>
 						<Trash2Icon size={17} />
-						{deleting ? "Eliminando…" : "Eliminar"}
+						Eliminar
 					</button>
 
 					<button
@@ -193,7 +184,7 @@ export function EditEntryDrawer({ entry, onClose }: EditEntryDrawerProps) {
 								? "bg-cost shadow-[0_8px_20px_rgba(214,73,46,0.34)]"
 								: "bg-earn shadow-[0_8px_20px_rgba(31,157,107,0.34)]",
 						)}
-						disabled={isSubmitting || deleting}
+						disabled={isSubmitting}
 						type="submit"
 					>
 						{isSubmitting ? "Guardando…" : "Guardar"}

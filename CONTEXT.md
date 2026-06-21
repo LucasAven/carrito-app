@@ -25,7 +25,7 @@ How an Entry was settled. A closed enum, today: `cash` (Efectivo) and `mercado_p
 _Avoid_: Method, instrument, channel, forma de pago (Spanish UI label only).
 
 **Soft-deleted Entry**:
-An Entry the Operator has deleted. Stamped with a `deleted_at`, hidden from every read query, but still in the database. Recoverable by an admin (manual SQL today; no trash UI). Edits, in contrast, mutate the row in place: there is no version history.
+An Entry the Operator has deleted. Stamped with a `deleted_at`, hidden from every read query, but still in the database. Immediately recoverable from the undo toast shown right after deletion (clears `deleted_at`); once that toast is gone, recoverable only by an admin (manual SQL today; no trash UI). Edits, in contrast, mutate the row in place: there is no version history.
 _Avoid_: Archived (different connotation), trashed.
 
 **Sale**:

@@ -7,6 +7,7 @@ import "@/styles/globals.css";
 import Appbar from "@/components/appbar";
 import BottomNav from "@/components/bottom-nav";
 import EntryActions from "@/components/EntryActions";
+import { ToastViewport } from "@/components/Toast";
 
 const baloo = Baloo_2({
 	subsets: ["latin"],
@@ -88,6 +89,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 				<Suspense fallback={null}>
 					<BottomNav />
 				</Suspense>
+				<ToastViewport />
 			</body>
 		</html>
 	);

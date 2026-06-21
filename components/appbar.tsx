@@ -24,7 +24,9 @@ const ThemeSwitch = dynamic(() => import("./ThemeSwitch"), {
 
 const Appbar = () => {
 	const pathname = usePathname();
-	const onAuthPage = AUTH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+	const onAuthPage = AUTH_PREFIXES.some((prefix) =>
+		pathname.startsWith(prefix),
+	);
 
 	return (
 		<div className="bg-bg dark:bg-bg-dark fixed top-0 left-0 z-20 w-full">

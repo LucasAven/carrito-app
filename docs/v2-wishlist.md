@@ -9,7 +9,7 @@ Deferred from v1 by deliberate scope decisions. Add here when something is cut "
 - **Receipt photo upload.** Attach images to Expenses.
 - **Categories on Expenses.** Fuel, ingredients, supplies, rent, etc.
 - **Multi-currency.** Store currency on the Operator profile; allow USD entries.
-- **Trash UI for soft-deleted Entries.** Today recoverable only via admin SQL.
+- **Trash UI for soft-deleted Entries.** A post-delete undo toast covers immediate mistakes; once it's dismissed, Entries are recoverable only via admin SQL.
 - **Real audit trail on edits.** Versioned rows instead of in-place mutation.
 - **Per-Operator multi-business.** Today one Operator = one set of books. Could split into Operator → Businesses → Entries.
 - **Voice entry via Siri Shortcuts.** "Hey Siri, nueva venta" hitting a token-authed API. Designed in [siri-shortcut-entries-plan](./siri-shortcut-entries-plan.md) and [ADR-0004](./adr/0004-siri-entry-via-shortcut-api.md).

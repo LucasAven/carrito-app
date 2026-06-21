@@ -26,7 +26,7 @@ Before touching code, read in this order:
 | Time | `occurred_on date` (Operator-chosen, may be past). `created_at timestamptz` (auto). Timezone hardcoded `America/Argentina/Buenos_Aires` for "today" computations. |
 | Payment types | Closed enum: `cash`, `mercado_pago`. Applies to both Sales and Expenses. |
 | Edit | In-place `update` (no version history). |
-| Delete | Soft delete via `deleted_at timestamptz`. No trash UI (admin SQL only). Native `confirm()` dialog. |
+| Delete | Soft delete via `deleted_at timestamptz`. No trash UI (admin SQL only). Optimistic removal + undo toast (replaced the original native `confirm()` dialog). |
 | Migrations | Supabase CLI + `supabase/migrations/` in repo. Local dev DB via `supabase start`. |
 | State | No Zustand. Reads from RSC + server actions for writes. |
 
@@ -160,8 +160,9 @@ Port the four query functions currently in `lib/api.ts` to Supabase:
 
 ### 10. Soft delete
 
-- Add a delete button inside the edit drawer (red, separated). Use native `window.confirm("¿Eliminar esta venta?")` / `"¿Eliminar este gasto?"` based on `kind`.
+- Add a delete button inside the edit drawer (red, separated).
 - Add `deleteEntry(id)` server action that does `update entries set deleted_at = now() where id = ?`.
+- On delete, remove the row optimistically (Balance totals + list update instantly) and show an undo toast (react-hot-toast). Undo calls a `restoreEntry(id)` action that clears `deleted_at`. This replaced the original native `window.confirm()` dialog.
 - Confirm reads filter `deleted_at is null` (should already be done in step 5).
 
 ### 11. Jump-to-date calendar popup

@@ -12,6 +12,7 @@ import { cn } from "@/utils/cn";
 
 interface EarnsCostsTabProps {
 	entries: Entry[];
+	onDelete: (entry: Entry) => void;
 }
 
 const SalesEmptyIcon = (
@@ -130,12 +131,19 @@ const TabPanel = ({
 	</div>
 );
 
-const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries }) => {
+const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries, onDelete }) => {
 	const [selectedTab, setSelectedTab] = useState(0);
 	const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
 	const earnings = entries.filter((entry) => entry.kind === "sale");
 	const expenses = entries.filter((entry) => entry.kind === "expense");
+
+	// Close the drawer immediately; the parent handles the optimistic removal,
+	// server delete and undo toast.
+	const handleDelete = (entry: Entry) => {
+		setEditingEntry(null);
+		onDelete(entry);
+	};
 
 	return (
 		<div>
@@ -186,6 +194,7 @@ const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries }) => {
 			<EditEntryDrawer
 				entry={editingEntry}
 				onClose={() => setEditingEntry(null)}
+				onDelete={handleDelete}
 			/>
 		</div>
 	);

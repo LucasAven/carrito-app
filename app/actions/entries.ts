@@ -125,3 +125,22 @@ export async function deleteEntry(id: string): Promise<ActionResult> {
 	revalidatePath("/balance");
 	return {};
 }
+
+// Quick undo for an accidental delete: clears the soft-delete stamp so the Entry
+// reappears in every read query. Only restores rows that are actually deleted,
+// so a stale undo can't resurrect something the Operator deleted again later.
+export async function restoreEntry(id: string): Promise<ActionResult> {
+	if (!id) return { error: "Falta el id" };
+
+	const supabase = await createClient();
+	const { error } = await supabase
+		.from("entries")
+		.update({ deleted_at: null })
+		.eq("id", id)
+		.not("deleted_at", "is", null);
+
+	if (error) return { error: error.message };
+
+	revalidatePath("/balance");
+	return {};
+}
