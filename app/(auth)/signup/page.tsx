@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 import Link from "next/link";
 
+import { getAuthErrorMessage } from "@/lib/auth/errors";
 import { createClient } from "@/lib/supabase/client";
 
 const SignupPage = () => {
@@ -27,7 +28,7 @@ const SignupPage = () => {
 		});
 
 		if (signUpError) {
-			setError(signUpError.message);
+			setError(getAuthErrorMessage(signUpError));
 			setPending(false);
 			return;
 		}

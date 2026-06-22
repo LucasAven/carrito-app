@@ -12,7 +12,7 @@ export default async function ConectarSiriPage() {
 	const tokens = await listTokens();
 
 	return (
-		<Section>
+		<Section className="pb-4">
 			<div className="flex flex-col gap-6">
 				<h1 className="text-2xl font-medium">Conectar con Siri</h1>
 				<SiriTokens tokens={tokens} />

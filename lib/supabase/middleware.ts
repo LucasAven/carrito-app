@@ -9,6 +9,13 @@ const PUBLIC_ROUTES = ["/login", "/signup", "/auth", "/api/shortcut"];
 const isPublicRoute = (pathname: string) =>
   PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
 
+// Pages a signed-in Operator has no reason to see; bounce them to the ledger.
+// Excludes /auth and /api/shortcut, which must still run with a session.
+const AUTH_PAGES = ["/login", "/signup"];
+
+const isAuthPage = (pathname: string) =>
+  AUTH_PAGES.some((route) => pathname.startsWith(route));
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -40,6 +47,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  if (user && isAuthPage(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/balance";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
 
   if (!user && !isPublicRoute(pathname)) {
     const url = request.nextUrl.clone();

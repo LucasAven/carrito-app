@@ -21,6 +21,11 @@ export function LogoutDrawer({
 		setPending(true);
 		const supabase = createClient();
 		await supabase.auth.signOut();
+		// Close the drawer and clear the loading state before navigating.
+		// Otherwise this component stays mounted under the persistent layout and
+		// the sheet lingers open, stuck on "Cerrando...".
+		setPending(false);
+		setOpenDrawer(false);
 		router.replace("/login");
 		router.refresh();
 	};

@@ -1,9 +1,10 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { getAuthErrorMessage, getCallbackErrorMessage } from "@/lib/auth/errors";
 import { createClient } from "@/lib/supabase/client";
 
 const LoginPage = () => {
@@ -12,6 +13,13 @@ const LoginPage = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [pending, setPending] = useState(false);
+
+	// The auth callback redirects here with ?error=... when an email link fails;
+	// surface it in Spanish instead of silently dropping the Operator on the form.
+	useEffect(() => {
+		const code = new URLSearchParams(window.location.search).get("error");
+		if (code) setError(getCallbackErrorMessage(code));
+	}, []);
 
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -25,7 +33,7 @@ const LoginPage = () => {
 		});
 
 		if (signInError) {
-			setError(signInError.message);
+			setError(getAuthErrorMessage(signInError));
 			setPending(false);
 			return;
 		}

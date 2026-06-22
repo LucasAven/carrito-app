@@ -8,7 +8,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    // Full-height flex column: the DatePicker stays pinned at the top while the
+    // page below (Balance card + scrollable entry list) fills the rest.
+    <div className="flex min-h-0 flex-1 flex-col">
       <Suspense fallback={null}>
         <DatePicker />
       </Suspense>

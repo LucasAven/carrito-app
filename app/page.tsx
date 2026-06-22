@@ -1,9 +1,10 @@
-import Section from "@/components/section";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
-  return (
-    <Section>
-      <h1 className="font-display text-ink dark:text-ink-dark text-2xl font-extrabold">Home</h1>
-    </Section>
-  );
+import { InternalRoutes } from "@/constants/routes";
+
+// The app has no standalone landing page: the Balance ledger is the home view.
+// Unauthenticated visitors are bounced to /login by the middleware before they
+// reach here.
+export default function Home() {
+  redirect(InternalRoutes.balance);
 }
