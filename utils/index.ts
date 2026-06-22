@@ -170,6 +170,21 @@ export const getTwelveMonthsFromNow = () => {
 };
 
 /**
+ * Get a window of recent years (current year and the previous `yearsBack`),
+ * oldest first, as 4-digit strings.
+ * @returns An array of year strings
+ * @example
+ * getRecentYears()
+ * //=> ["2022", "2023", "2024", "2025", "2026"]
+ * */
+export const getRecentYears = (yearsBack = 4) => {
+  const currentYear = new Date().getFullYear();
+  return Array.from({ length: yearsBack + 1 }, (_, index) =>
+    String(currentYear - yearsBack + index),
+  );
+};
+
+/**
  * Get the date and the previous days of the month
  * @param selectedDate - The selected date
  * @param addExtraDaysFromPreviousMonth - Whether to add extra days from the previous month
@@ -233,6 +248,8 @@ export const getFiltersFromSearchParams = (
 
   const month = searchParams.get(URL_FILTERS.MONTH);
 
+  const year = searchParams.get(URL_FILTERS.YEAR);
+
   if (!date && week) {
     return {
       date: "",
@@ -240,6 +257,7 @@ export const getFiltersFromSearchParams = (
       month: "",
       paymentTypes: paymentFilters ?? [],
       week,
+      year: "",
     };
   }
 
@@ -250,15 +268,28 @@ export const getFiltersFromSearchParams = (
       month: month as MonthFilter,
       paymentTypes: paymentFilters ?? [],
       week: "",
+      year: "",
     };
   }
 
-  // if there's no week filter, return the date filter (or today's date)
+  if (!date && !week && !month && year) {
+    return {
+      date: "",
+      label: labelFilter ?? "",
+      month: "",
+      paymentTypes: paymentFilters ?? [],
+      week: "",
+      year,
+    };
+  }
+
+  // if there's no week/month/year filter, return the date filter (or today's date)
   return {
     date: date ?? getTodaysDate(),
     label: labelFilter ?? "",
     month: "",
     paymentTypes: paymentFilters ?? [],
     week: "",
+    year: "",
   };
 };

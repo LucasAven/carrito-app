@@ -89,6 +89,18 @@ export async function listEntriesByMonth(
   return listEntriesByWeek(start, end, options);
 }
 
+export async function listEntriesByYear(
+  year: string,
+  options?: ListOptions,
+): Promise<Entry[]> {
+  if (!/^\d{4}$/.test(year)) return [];
+
+  const start = `${year}-01-01`;
+  const end = `${year}-12-31`;
+
+  return listEntriesByWeek(start, end, options);
+}
+
 export async function listAllEntries(options?: ListOptions): Promise<Entry[]> {
   const supabase = await createClient();
   let query = supabase

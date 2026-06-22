@@ -32,4 +32,5 @@ export interface BalanceFilters {
   month: MonthFilter;
   paymentTypes: PaymentType[];
   week: string;
+  year: string;
 }

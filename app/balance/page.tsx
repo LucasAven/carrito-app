@@ -14,12 +14,14 @@ import {
 	listEntriesByDate,
 	listEntriesByMonth,
 	listEntriesByWeek,
+	listEntriesByYear,
 	summarizeEntries,
 } from "@/lib/db/entries";
 import {
 	convertUrlWeekRangeToWeeksDates,
 	getFiltersFromSearchParams,
 	getFullDateIso,
+	getRecentYears,
 	getTodaysDate,
 	getTwelveMonthsFromNow,
 	getYearInWeekRanges,
@@ -29,12 +31,15 @@ function getPeriodLabel({
 	date,
 	month,
 	week,
+	year,
 }: {
 	date?: string;
 	month?: string;
 	week?: string;
+	year?: string;
 }): string {
 	try {
+		if (year) return `Balance de ${year}`;
 		if (week) return "Balance de la semana";
 		if (month) {
 			const parsed = parse(month, "MMM-yyyy", new Date());
@@ -59,6 +64,7 @@ async function loadEntries(
 	const date = searchParams.get(URL_FILTERS.DATE) ?? "";
 	const week = searchParams.get(URL_FILTERS.WEEK) ?? "";
 	const month = searchParams.get(URL_FILTERS.MONTH) ?? "";
+	const year = searchParams.get(URL_FILTERS.YEAR) ?? "";
 	const filters = getFiltersFromSearchParams(searchParams);
 	const options = { paymentTypes: filters.paymentTypes };
 
@@ -73,6 +79,8 @@ async function loadEntries(
 		entries = await listEntriesByWeek(start, end, options);
 	} else if (month) {
 		entries = await listEntriesByMonth(month, options);
+	} else if (year) {
+		entries = await listEntriesByYear(year, options);
 	}
 
 	return { entries, ...summarizeEntries(entries) };
@@ -85,17 +93,19 @@ export default async function BalancePage({
 		date: string;
 		month: string;
 		week: string;
+		year: string;
 	}>;
 }) {
 	const resolvedSearchParams = await searchParams;
 	const date = resolvedSearchParams?.date;
 	const week = resolvedSearchParams?.week;
 	const month = resolvedSearchParams?.month;
+	const year = resolvedSearchParams?.year;
 
-	// if the date is not provided or has an invalid format (and there's no week filter set),
-	// redirect to the URL with the current date
+	// if the date is not provided or has an invalid format (and there's no week,
+	// month or year filter set), redirect to the URL with the current date
 	if (!date || new Date(date).toString() === "Invalid Date") {
-		if (!week && !month) {
+		if (!week && !month && !year) {
 			const todayDate = getTodaysDate();
 			redirect(`${InternalRoutes.balance}?date=${todayDate}`);
 		}
@@ -156,12 +166,20 @@ export default async function BalancePage({
 		}
 	}
 
+	if (year) {
+		const years = getRecentYears();
+		// reject anything outside the selectable window (also covers future years)
+		if (!years.includes(year)) {
+			redirect(`${InternalRoutes.balance}?year=${years.at(-1)}`);
+		}
+	}
+
 	const convertedSearchParams = new URLSearchParams(resolvedSearchParams);
 	const { earnings, entries, expenses, total } = await loadEntries(
 		convertedSearchParams,
 	);
 
-	const periodLabel = getPeriodLabel({ date, month, week });
+	const periodLabel = getPeriodLabel({ date, month, week, year });
 
 	return (
 		<Section className="flex min-h-0 flex-1 flex-col">
