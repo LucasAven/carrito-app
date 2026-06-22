@@ -160,7 +160,7 @@ site_url = "http://127.0.0.1:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+additional_redirect_urls = ["https://127.0.0.1:3000", "https://carrito-app-one.vercel.app/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -233,20 +233,39 @@ otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# SMTP via a dedicated Gmail account + App Password (requires 2-Step Verification
+# on that account). Applies to LOCAL dev only; set the same values in the Dashboard
+# (Project Settings, Authentication, SMTP Settings) for the hosted project.
+# Gmail forces the From address to the authenticated account, so user/admin_email
+# must be the same Gmail address. Set GMAIL_APP_PASSWORD in .env.local (16 chars,
+# no spaces) and never commit it.
+[auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 465
+user = "env(GMAIL_SMTP_USER)"
+pass = "env(GMAIL_APP_PASSWORD)"
+admin_email = "env(GMAIL_SMTP_USER)"
+sender_name = "Carrito App"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Spanish email templates. NOTE: these apply to LOCAL dev only. config push does
+# NOT upload email templates to the hosted project. Paste the same HTML into the
+# Dashboard (Authentication, Emails, Templates) for production to use them.
+[auth.email.template.confirmation]
+subject = "Confirmá tu cuenta de Carrito"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Restablecer tu contraseña"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Tu link para ingresar a Carrito"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.email_change]
+subject = "Confirmá tu nuevo email"
+content_path = "./supabase/templates/email_change.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
