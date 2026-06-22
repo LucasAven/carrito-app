@@ -160,10 +160,11 @@ export function SiriTokens({ tokens }: { tokens: ShortcutToken[] }) {
 				<label className="text-sm font-medium" htmlFor="token-name">
 					Nombre del dispositivo
 				</label>
+				{/** biome-ignore lint/correctness/useUniqueElementIds: unique id */}
 				<input
 					id="token-name"
 					onChange={(e) => setName(e.target.value)}
-					placeholder="iPhone de mamá"
+					placeholder="Mi iPhone"
 					type="text"
 					value={name}
 				/>

@@ -180,12 +180,16 @@ const StatsView: FC<StatsViewProps> = ({ entries, years }) => {
 		: null;
 
 	return (
-		<div className="flex flex-col gap-4">
-			{/* Controls: sticky under the fixed appbar (h-20) so the selectors stay
-			    reachable while scrolling. z-10 keeps them above the cards' relative
-			    bar tracks; the drawer overlay sits at z-10 too (later in the DOM) so
-			    it still dims this bar when a drawer opens, below the appbar's z-20. */}
-			<div className="xs:-mx-5 xs:px-5 bg-bg dark:bg-bg-dark sticky top-20 z-10 -mx-4 flex flex-col gap-3 px-4 pt-2 pb-3">
+		<div className="flex flex-col gap-4 pb-4">
+			{/* Controls: sticky to the top of the scroll container (the content area,
+			    which already starts below the fixed appbar) so the selectors stay
+			    reachable while scrolling. The -top-2 cancels the scroll container's
+			    pt-2 so the bar pins flush under the appbar (8px breathing room at
+			    rest, no content peeking through once pinned). z-10 keeps them above
+			    the cards' relative bar tracks; the drawer overlay sits at z-10 too
+			    (later in the DOM) so it still dims this bar when a drawer opens,
+			    below the appbar's z-20. */}
+			<div className="xs:-mx-5 xs:px-5 bg-bg dark:bg-bg-dark sticky -top-2 z-10 -mx-4 flex flex-col gap-3 px-4 pt-2 pb-3">
 				<div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
 					<Pill active={year === "all"} onClick={() => setYear("all")}>
 						Todos

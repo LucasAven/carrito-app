@@ -58,8 +58,33 @@
   scrollbar-width: none;
 }
 
+/* Softens the left/right edges of a horizontal scroller so partially-scrolled
+   items fade out instead of hard-cutting. The fade width matches the px-4 the
+   scroller carries, so resting first/last items sit in the padding and stay
+   fully opaque. */
+@utility fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 0.75rem,
+    black calc(100% - 0.75rem),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 0.75rem,
+    black calc(100% - 0.75rem),
+    transparent
+  );
+}
+
 body {
-  @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark min-h-screen font-sans antialiased;
+  /* Fixed-height app shell: the body is exactly the visible viewport (dvh, so
+     it tracks mobile browser chrome) and never scrolls itself. Each page's
+     content area owns its own scroll, so short pages don't scroll at all and
+     the Balance ledger can scroll just its entry list. */
+  @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark h-dvh overflow-hidden font-sans antialiased;
 }
 
 /* Native-app feel: kill focus rings and the mobile tap-highlight flash. */

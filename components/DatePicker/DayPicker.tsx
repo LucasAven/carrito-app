@@ -33,12 +33,14 @@ export const DayPicker = () => {
 			] as HTMLLIElement;
 
 			if (selectedElement) {
-				// target position of selected date
+				// Land the selected day's right edge ~16px inside the carousel (matching
+				// the px-4 scroll padding) so it stays fully visible and clear of the
+				// edge fade, instead of being pushed past the right edge and clipped.
 				const targetPos =
 					selectedElement.offsetLeft +
 					selectedElement.offsetWidth -
-					carouselRef.current.offsetWidth -
-					12;
+					carouselRef.current.offsetWidth +
+					16;
 
 				carouselRef.current.scrollLeft = targetPos;
 			}
@@ -48,7 +50,7 @@ export const DayPicker = () => {
 	return (
 		<nav className="flex items-center gap-2">
 			<ul
-				className="no-scrollbar flex flex-1 gap-2 overflow-x-scroll py-1"
+				className="no-scrollbar fade-x flex flex-1 gap-2 overflow-x-scroll overflow-y-hidden px-4 py-3"
 				ref={carouselRef}
 			>
 				{currentDateAndRange.map(({ date, day, month }, index) => {

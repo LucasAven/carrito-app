@@ -7,7 +7,9 @@ import "@/styles/globals.css";
 import Appbar from "@/components/appbar";
 import BottomNav from "@/components/bottom-nav";
 import EntryActions from "@/components/EntryActions";
+import MainShell from "@/components/MainShell";
 import { ToastViewport } from "@/components/Toast";
+import { createClient } from "@/lib/supabase/server";
 
 const baloo = Baloo_2({
 	subsets: ["latin"],
@@ -65,7 +67,13 @@ export const viewport: Viewport = {
 // Runs before first paint to prevent flash-of-wrong-theme.
 const themeInitScript = `(function(){try{var t=localStorage.getItem('theme')||'system';var isDark=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);if(isDark)document.documentElement.classList.add('dark');}catch(e){}})();`;
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = async ({ children }: { children: React.ReactNode }) => {
+	const supabase = await createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+	const isAuthenticated = Boolean(user);
+
 	return (
 		<html
 			className={`${baloo.variable} ${nunito.variable}`}
@@ -78,16 +86,14 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 			</head>
 			<body className="relative flex flex-col items-center">
 				<Suspense fallback={null}>
-					<Appbar />
+					<Appbar isAuthenticated={isAuthenticated} />
 				</Suspense>
-				<main className="mx-auto w-full max-w-3xl pt-20 pb-28 sm:pb-24">
-					<div className="xs:px-5 px-4 pt-2">{children}</div>
-				</main>
+				<MainShell>{children}</MainShell>
 				<Suspense fallback={null}>
 					<EntryActions />
 				</Suspense>
 				<Suspense fallback={null}>
-					<BottomNav />
+					<BottomNav isAuthenticated={isAuthenticated} />
 				</Suspense>
 				<ToastViewport />
 			</body>

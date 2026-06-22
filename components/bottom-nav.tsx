@@ -6,8 +6,12 @@ import { usePathname } from "next/navigation";
 import { InternalRoutes, InternalRoutesData, URL_FILTERS } from "@/constants/routes";
 import { getTodaysDate } from "@/utils";
 
-const BottomNav = () => {
+const BottomNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   const pathname = usePathname();
+
+  // Balance and Resumen are session-gated; without one the middleware bounces
+  // every tap to /login, so there's nothing to navigate to.
+  if (!isAuthenticated) return null;
 
   return (
     <div className="w-full sm:hidden">

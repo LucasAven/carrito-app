@@ -62,15 +62,19 @@ const BalanceView: FC<BalanceViewProps> = ({ entries, periodLabel }) => {
 	};
 
 	return (
-		<>
+		<div className="flex min-h-0 flex-1 flex-col gap-4">
+			{/* The Balance card stays pinned so the period total and the date
+			    controls above it remain in view; only the entry list scrolls. */}
 			<Balance
 				earnings={earnings}
 				expenses={expenses}
 				periodLabel={periodLabel}
 				total={total}
 			/>
-			<EarnsCostsTab entries={visibleEntries} onDelete={handleDelete} />
-		</>
+			<div className="no-scrollbar min-h-0 flex-1 overflow-y-auto">
+				<EarnsCostsTab entries={visibleEntries} onDelete={handleDelete} />
+			</div>
+		</div>
 	);
 };
 

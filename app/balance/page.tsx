@@ -164,8 +164,8 @@ export default async function BalancePage({
 	const periodLabel = getPeriodLabel({ date, month, week });
 
 	return (
-		<Section>
-			<div className="flex flex-col gap-4">
+		<Section className="flex min-h-0 flex-1 flex-col">
+			<div className="flex min-h-0 flex-1 flex-col gap-4">
 				{entries.length === 0 ? (
 					<>
 						<Suspense fallback={null}>
