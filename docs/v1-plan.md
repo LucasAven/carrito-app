@@ -203,7 +203,7 @@ Port the four query functions currently in `lib/api.ts` to Supabase:
 - In Vercel: import the repo, leave framework preset on Next.js, add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as env vars.
 - **Do not add a payment method.**
 - After first successful deploy: Settings, Billing, Spend Management, set hard cap at $0.
-- Configure Supabase Auth for production (the hosted project reads these from the Dashboard, NOT from `supabase/config.toml`, which is local-dev only):
+- Configure Supabase Auth for production (the hosted project reads these from the Dashboard, NOT from `supabase/config.toml`, which is local-dev only; see [ADR-0005](./adr/0005-auth-emails-via-custom-smtp-and-spanish-templates.md) for the why):
   - Authentication, URL Configuration: set Site URL to the deployed URL (`https://carrito-app-one.vercel.app`) and add redirect URLs `https://carrito-app-one.vercel.app/**` and `http://localhost:3000/**`. Without this, confirmation links fall back to the Site URL and point at localhost.
   - Authentication, Emails, Templates: paste the Spanish, app-styled HTML from `supabase/templates/*.html` (Confirm signup, Reset password, Magic Link, Change email). The built-in templates are English only.
   - Project Settings, Authentication, SMTP Settings: set up custom SMTP (Gmail App Password, or Resend with a custom domain). The built-in email service is capped at 2 emails/hour and only delivers to project team members, so real users get no email without this. See `supabase/config.toml` `[auth.email.smtp]` for the field values.
