@@ -21,11 +21,16 @@ const PAYMENT_TYPE_ICONS: Record<PaymentType, ReactNode> = {
 	mercado_pago: <CreditCardIcon size={22} />,
 };
 
-export function FilterDrawer({ children }: { children: ReactNode }) {
+export function FilterDrawer({
+	open: openDrawer,
+	setOpen: setOpenDrawer,
+}: {
+	open: boolean;
+	setOpen: (open: boolean) => void;
+}) {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 
-	const [openDrawer, setOpenDrawer] = useState(false);
 	const [selectedFilters, setSelectedFilters] = useState<BalanceFilters>(() =>
 		getFiltersFromSearchParams(searchParams),
 	);
@@ -58,7 +63,7 @@ export function FilterDrawer({ children }: { children: ReactNode }) {
 			setOpen={setOpenDrawer}
 			subtitle="Forma de pago"
 			title="Filtros"
-			triggerButton={children}
+			triggerButton={null}
 		>
 			<div className="grid grid-cols-2 gap-3 pt-1">
 				{PAYMENT_TYPES.map((type) => (

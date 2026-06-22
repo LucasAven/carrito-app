@@ -1,15 +1,20 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { DrawerBase } from "./DrawerBase";
 
 import { createClient } from "@/lib/supabase/client";
 
-export function LogoutDrawer({ children }: { children: ReactNode }) {
+export function LogoutDrawer({
+	open: openDrawer,
+	setOpen: setOpenDrawer,
+}: {
+	open: boolean;
+	setOpen: (open: boolean) => void;
+}) {
 	const router = useRouter();
-	const [openDrawer, setOpenDrawer] = useState(false);
 	const [pending, setPending] = useState(false);
 
 	const onConfirm = async () => {
@@ -26,7 +31,7 @@ export function LogoutDrawer({ children }: { children: ReactNode }) {
 			setOpen={setOpenDrawer}
 			subtitle="Vas a tener que volver a ingresar para usar la app."
 			title="¿Cerrar sesión?"
-			triggerButton={children}
+			triggerButton={null}
 		>
 			<div className="flex flex-col gap-3">
 				<button

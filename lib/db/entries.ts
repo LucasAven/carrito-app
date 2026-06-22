@@ -89,6 +89,23 @@ export async function listEntriesByMonth(
   return listEntriesByWeek(start, end, options);
 }
 
+export async function listAllEntries(options?: ListOptions): Promise<Entry[]> {
+  const supabase = await createClient();
+  let query = supabase
+    .from("entries")
+    .select(BASE_SELECT)
+    .is("deleted_at", null)
+    .order("occurred_on", { ascending: true });
+
+  if (options?.paymentTypes?.length) {
+    query = query.in("payment", options.paymentTypes);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return normalize(data ?? []);
+}
+
 export interface EntryTotals {
   earnings: number;
   expenses: number;
