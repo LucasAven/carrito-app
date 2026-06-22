@@ -1,8 +1,9 @@
 import { ReactElement } from "react";
-import { ReceiptIcon } from "lucide-react";
+import { ChartColumnIcon, ReceiptIcon } from "lucide-react";
 
 export const InternalRoutes = {
   balance: "/balance",
+  stats: "/stats",
 } as const;
 
 export const InternalRoutesData: {
@@ -14,6 +15,11 @@ export const InternalRoutesData: {
     href: `/balance`,
     icon: <ReceiptIcon className="stroke-current" size={20} />,
     label: "Balance",
+  },
+  {
+    href: `/stats`,
+    icon: <ChartColumnIcon className="stroke-current" size={20} />,
+    label: "Resumen",
   },
 ];
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { InternalRoutesData, URL_FILTERS } from "@/constants/routes";
+import { InternalRoutes, InternalRoutesData, URL_FILTERS } from "@/constants/routes";
 import { getTodaysDate } from "@/utils";
 
 const BottomNav = () => {
@@ -20,9 +20,12 @@ const BottomNav = () => {
               className="text-muted dark:text-muted-dark aria-current:text-brand flex h-full w-full flex-col items-center justify-center space-y-1 aria-current:font-extrabold"
               href={{
                 pathname: href,
-                query: {
-                  [URL_FILTERS.DATE]: getTodaysDate(),
-                },
+                // Only the Balance ledger is date-scoped; Resumen has its own
+                // year selector and takes no query params.
+                query:
+                  href === InternalRoutes.balance
+                    ? { [URL_FILTERS.DATE]: getTodaysDate() }
+                    : undefined,
               }}
             >
               {icon}

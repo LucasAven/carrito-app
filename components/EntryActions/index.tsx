@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import { CreateBalanceDrawer, CreateExpenseDrawer } from "@/components/Drawers";
 
 // Routes where the quick-entry actions don't belong: the auth flow (no session
-// yet) and the Siri connection screen.
-const HIDDEN_PREFIXES = ["/login", "/signup", "/conectar-siri"];
+// yet), the Siri connection screen, and the stats page (a reflection view).
+const HIDDEN_PREFIXES = ["/login", "/signup", "/conectar-siri", "/stats"];
 
 const EntryActions = () => {
 	const pathname = usePathname();
