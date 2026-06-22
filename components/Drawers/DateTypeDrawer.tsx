@@ -9,6 +9,7 @@ import { DrawerBase } from "./DrawerBase";
 
 import { InternalRoutes, URL_FILTERS } from "@/constants/routes";
 import {
+	getRecentYears,
 	getTodaysDate,
 	getTwelveMonthsFromNow,
 	getYearInWeekRanges,
@@ -23,7 +24,9 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 		? "week"
 		: searchParams.get(URL_FILTERS.MONTH)
 			? "month"
-			: "date";
+			: searchParams.get(URL_FILTERS.YEAR)
+				? "year"
+				: "date";
 
 	const options = [
 		{
@@ -43,6 +46,11 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 			key: "month" as const,
 			label: "Este mes",
 			query: { [URL_FILTERS.MONTH]: getTwelveMonthsFromNow().at(-1) },
+		},
+		{
+			key: "year" as const,
+			label: "Este año",
+			query: { [URL_FILTERS.YEAR]: getRecentYears().at(-1) },
 		},
 	];
 
