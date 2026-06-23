@@ -28,11 +28,20 @@ export function RangeDrawer({ children, currentRange }: RangeDrawerProps) {
 	const [open, setOpen] = useState(false);
 
 	const parsed = currentRange ? parseRangeUrl(currentRange) : null;
-	const [selected, setSelected] = useState<DateRange | undefined>(
-		parsed ? { from: toDate(parsed.from), to: toDate(parsed.to) } : undefined,
-	);
+	const appliedRange: DateRange | undefined = parsed
+		? { from: toDate(parsed.from), to: toDate(parsed.to) }
+		: undefined;
+	const [selected, setSelected] = useState<DateRange | undefined>(appliedRange);
 
 	const canApply = Boolean(selected?.from && selected?.to);
+
+	// Re-sync the calendar to the applied range each time the drawer opens, so
+	// reopening the pill lands on the current selection (and its month) rather
+	// than today, and discards any half-finished pick from a dismissed open.
+	const handleOpenChange = (next: boolean) => {
+		if (next) setSelected(appliedRange);
+		setOpen(next);
+	};
 
 	const onApply = () => {
 		if (!selected?.from || !selected?.to) return;
@@ -55,13 +64,14 @@ export function RangeDrawer({ children, currentRange }: RangeDrawerProps) {
 	return (
 		<DrawerBase
 			open={open}
-			setOpen={setOpen}
+			setOpen={handleOpenChange}
 			subtitle="Elegí el primer y el último día"
 			title="Período personalizado"
 			triggerButton={children}
 		>
 			<div className="flex flex-col items-center gap-4">
 				<Calendar
+					defaultMonth={selected?.from}
 					disabled={{ after: new Date() }}
 					mode="range"
 					onSelect={setSelected}
