@@ -76,8 +76,9 @@ flags, etc.) are dropped.
   Settings, then API). The key stays local and is never committed.
 - This project has "Automatically expose new tables" off, so `service_role` holds no
   table privileges by default (the app only ever touches these tables as
-  `authenticated`). Rather than widen the permanent surface with a tracked migration,
-  grant the privilege just for the backfill and revoke it after, in the SQL editor:
+  `authenticated`); see [ADR-0007](./adr/0007-data-api-roles-get-no-default-grants.md).
+  Rather than widen the permanent surface with a tracked migration, grant the privilege
+  just for the backfill and revoke it after, in the SQL editor:
   ```sql
   grant select, insert on public.entries to service_role;    -- before the run
   revoke select, insert on public.entries from service_role; -- after it succeeds
