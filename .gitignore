@@ -12,10 +12,6 @@ node_modules
 .DS_Store
 *.pem
 
-# legacy import data (mom's real financials; one-time backfill, never commit)
-# see docs/legacy-import-plan.md
-/20[0-9][0-9].json
-
 # debug
 npm-debug.log*
 yarn-debug.log*

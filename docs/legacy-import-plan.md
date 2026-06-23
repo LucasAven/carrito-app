@@ -86,6 +86,6 @@ flags, etc.) are dropped.
 
 ## Disposition
 
-The four `*.json` files hold real financials: **gitignored and deleted** from the
-working tree once the backfill is verified. The script is committed (it holds no
+The four `*.json` files hold real financials: **deleted** from the working tree once
+the backfill is verified, and never committed. The script is committed (it holds no
 secrets) as the record of how the history was loaded.
