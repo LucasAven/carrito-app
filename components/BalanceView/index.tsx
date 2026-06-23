@@ -70,6 +70,7 @@ const BalanceView: FC<BalanceViewProps> = ({ entries, periodLabel }) => {
 				expenses={expenses}
 				periodLabel={periodLabel}
 				total={total}
+				showExport
 			/>
 			<div className="no-scrollbar min-h-0 flex-1 overflow-y-auto">
 				<EarnsCostsTab entries={visibleEntries} onDelete={handleDelete} />

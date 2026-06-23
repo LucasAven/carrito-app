@@ -4,58 +4,58 @@
 @custom-variant aria-current (&[aria-current="page"]);
 
 @theme {
-  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-baloo), var(--font-nunito), sans-serif;
+	--font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+	--font-display: var(--font-baloo), var(--font-nunito), sans-serif;
 
-  --breakpoint-xs: 375px;
+	--breakpoint-xs: 375px;
 
-  /* Accent colors: brand & amber constant; earn/cost brighten in dark mode */
-  --color-brand: #e0613e;
-  --color-earn: #1f9d6b;
-  --color-cost: #d6492e;
-  --color-amber: #f5a524;
-  --color-earn-dark: #34c88a;
-  --color-cost-dark: #ff7e63;
+	/* Accent colors: brand & amber constant; earn/cost brighten in dark mode */
+	--color-brand: #e0613e;
+	--color-earn: #1f9d6b;
+	--color-cost: #d6492e;
+	--color-amber: #f5a524;
+	--color-earn-dark: #34c88a;
+	--color-cost-dark: #ff7e63;
 
-  /* Semantic tokens: light values + explicit `-dark` variants.
+	/* Semantic tokens: light values + explicit `-dark` variants.
      Apply both with the dark: prefix, e.g. `bg-surface dark:bg-surface-dark`. */
-  --color-bg: #fbf4ea;
-  --color-surface: #ffffff;
-  --color-track: #ede4d9;
-  --color-sheet: #fbf4ea;
-  --color-balance: #3a2a22;
-  --color-badge: #f2eae2;
+	--color-bg: #fbf4ea;
+	--color-surface: #ffffff;
+	--color-track: #ede4d9;
+	--color-sheet: #fbf4ea;
+	--color-balance: #3a2a22;
+	--color-badge: #f2eae2;
 
-  --color-ink: #3a2a22;
-  --color-muted: #9a7b68;
-  --color-faint: #bba797;
-  --color-label: #7a6253;
-  --color-disabled: #cdbbac;
+	--color-ink: #3a2a22;
+	--color-muted: #9a7b68;
+	--color-faint: #bba797;
+	--color-label: #7a6253;
+	--color-disabled: #cdbbac;
 
-  --color-line: #efd9cf;
+	--color-line: #efd9cf;
 
-  --color-bg-dark: #161009;
-  --color-surface-dark: #2e2218;
-  --color-track-dark: #251b13;
-  --color-sheet-dark: #1c140d;
-  --color-balance-dark: #2a1e16;
-  --color-badge-dark: #3d2e22;
+	--color-bg-dark: #161009;
+	--color-surface-dark: #2e2218;
+	--color-track-dark: #251b13;
+	--color-sheet-dark: #1c140d;
+	--color-balance-dark: #2a1e16;
+	--color-badge-dark: #3d2e22;
 
-  --color-ink-dark: #f5ece2;
-  --color-muted-dark: #b49b89;
-  --color-label-dark: #c7ac99;
-  --color-disabled-dark: #6b5544;
+	--color-ink-dark: #f5ece2;
+	--color-muted-dark: #b49b89;
+	--color-label-dark: #c7ac99;
+	--color-disabled-dark: #6b5544;
 
-  --color-line-dark: rgba(255, 255, 255, 0.08);
+	--color-line-dark: rgba(255, 255, 255, 0.08);
 }
 
 @utility no-scrollbar {
-  &::-webkit-scrollbar {
-    display: none;
-  }
+	&::-webkit-scrollbar {
+		display: none;
+	}
 
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 /* Softens the left/right edges of a horizontal scroller so partially-scrolled
@@ -63,36 +63,98 @@
    scroller carries, so resting first/last items sit in the padding and stay
    fully opaque. */
 @utility fade-x {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 0.75rem,
-    black calc(100% - 0.75rem),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 0.75rem,
-    black calc(100% - 0.75rem),
-    transparent
-  );
+	-webkit-mask-image: linear-gradient(
+		to right,
+		transparent,
+		black 0.75rem,
+		black calc(100% - 0.75rem),
+		transparent
+	);
+	mask-image: linear-gradient(
+		to right,
+		transparent,
+		black 0.75rem,
+		black calc(100% - 0.75rem),
+		transparent
+	);
 }
 
 body {
-  /* Fixed-height app shell: the body is exactly the visible viewport (dvh, so
+	/* Fixed-height app shell: the body is exactly the visible viewport (dvh, so
      it tracks mobile browser chrome) and never scrolls itself. Each page's
      content area owns its own scroll, so short pages don't scroll at all and
      the Balance ledger can scroll just its entry list. */
-  @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark h-dvh overflow-hidden font-sans antialiased;
+	@apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark h-dvh overflow-hidden font-sans antialiased;
 }
 
 /* Native-app feel: kill focus rings and the mobile tap-highlight flash. */
 * {
-  -webkit-tap-highlight-color: transparent;
+	-webkit-tap-highlight-color: transparent;
 }
 
 *:focus,
 *:focus-visible {
-  outline: none;
+	outline: none;
+}
+
+/* Print = "Save as PDF". The export report (/exportar) is the only printable
+   surface, so printing strips the fixed app chrome (Appbar, BottomNav, toasts)
+   and the on-screen toolbar, then lets the single report flow across pages.
+   This is how the app produces a PDF without a PDF library. */
+@media print {
+	/* The shell is normally a non-scrolling, fixed-height box; printing needs the
+     document to grow to its full content height instead. */
+	body {
+		height: auto;
+		overflow: visible;
+		background: #ffffff !important;
+	}
+
+	/* Everything that isn't the content column is chrome: drop it. */
+	body > *:not(main) {
+		display: none !important;
+	}
+
+	.no-print {
+		display: none !important;
+	}
+
+	/* Undo the shell's top padding / bottom clearance and, crucially, the nested
+     overflow-y-auto scrollers, which would otherwise clip a long report to the
+     first page. */
+	main {
+		margin: 0 !important;
+		padding: 0 !important;
+		height: auto !important;
+	}
+
+	main * {
+		overflow: visible !important;
+		max-height: none !important;
+	}
+
+	/* The on-screen "card" becomes the bare page. */
+	#export-report {
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		border: none !important;
+		border-radius: 0 !important;
+		box-shadow: none !important;
+	}
+
+	/* Keep the colored amounts and summary chips in the PDF, and don't split a row
+     across a page boundary; repeat the table header on every page. */
+	#export-report {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	#export-report thead {
+		display: table-header-group;
+	}
+
+	#export-report tr {
+		page-break-inside: avoid;
+	}
 }

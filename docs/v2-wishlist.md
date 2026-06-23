@@ -5,9 +5,13 @@ Deferred from v1 by deliberate scope decisions. Add here when something is cut "
 - ~~**Stats page** (`/stats`).~~ **Shipped** as "Resumen" (see [v2-stats-plan](./v2-stats-plan.md)). The pie-chart-by-payment-type, expense categories, and generic trend chart sketched here were deliberately dropped in favor of the two questions the Operator actually asks: best weekday and best month.
 - **Calendar heatmap page** (`/calendar`). Month-grid with per-day totals; green/red shading for good days vs heavy spend. The v1 substitute is a jump-to-date popup on the existing DatePicker. (Also dropped from the Resumen page; a standalone heatmap page is still deferred.)
 - **Search by label.** UI hidden in v1 but URL wiring (`URL_FILTERS.LABEL`) and `SearchBar` component remain. Surface again if Operators report scrolling fatigue.
-- **CSV / PDF export.** For sharing books with an accountant. The inverse, a one-time
-  **import** of mom's history from her previous app, was pulled forward as a hand-run
-  backfill (see [legacy-import-plan](./legacy-import-plan.md)); export itself is still deferred.
+- ~~**CSV / PDF export.**~~ **Shipped** as an "Exportar" menu item that opens a print-ready
+  report at `/exportar` for the currently-viewed Balance scope (see
+  [ADR-0008](./adr/0008-export-via-print-and-client-csv.md)). PDF is the browser's own
+  print-to-PDF (no PDF library); CSV is built client-side and shared via the Web Share
+  API with a download fallback. The inverse, a one-time **import** of mom's history from
+  her previous app, was pulled forward as a hand-run backfill (see
+  [legacy-import-plan](./legacy-import-plan.md)).
 - **Receipt photo upload.** Attach images to Expenses.
 - **Categories on Expenses.** Fuel, ingredients, supplies, rent, etc.
 - **Multi-currency.** Store currency on the Operator profile; allow USD entries.
