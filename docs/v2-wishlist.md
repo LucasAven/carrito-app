@@ -5,7 +5,9 @@ Deferred from v1 by deliberate scope decisions. Add here when something is cut "
 - ~~**Stats page** (`/stats`).~~ **Shipped** as "Resumen" (see [v2-stats-plan](./v2-stats-plan.md)). The pie-chart-by-payment-type, expense categories, and generic trend chart sketched here were deliberately dropped in favor of the two questions the Operator actually asks: best weekday and best month.
 - **Calendar heatmap page** (`/calendar`). Month-grid with per-day totals; green/red shading for good days vs heavy spend. The v1 substitute is a jump-to-date popup on the existing DatePicker. (Also dropped from the Resumen page; a standalone heatmap page is still deferred.)
 - **Search by label.** UI hidden in v1 but URL wiring (`URL_FILTERS.LABEL`) and `SearchBar` component remain. Surface again if Operators report scrolling fatigue.
-- **CSV / PDF export.** For sharing books with an accountant.
+- **CSV / PDF export.** For sharing books with an accountant. The inverse, a one-time
+  **import** of mom's history from her previous app, was pulled forward as a hand-run
+  backfill (see [legacy-import-plan](./legacy-import-plan.md)); export itself is still deferred.
 - **Receipt photo upload.** Attach images to Expenses.
 - **Categories on Expenses.** Fuel, ingredients, supplies, rent, etc.
 - **Multi-currency.** Store currency on the Operator profile; allow USD entries.
@@ -21,4 +23,3 @@ Held back during the 2026-06 deps refresh because each is a meaningful migration
 - **ESLint 8 → 9.** Forces flat-config migration of `.eslintrc`. No runtime CVE risk so deferring is safe.
 - **react-day-picker 8 → 9/10 (and with it date-fns 3 → 4).** v9 renamed the class slots (`caption_label`, `IconLeft`, etc.) used by `components/Calendar/`. Calendar refactor required.
 - **tailwindcss 3 → 4.** Config-format rewrite (CSS-first). Touch every Tailwind file.
-
