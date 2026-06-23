@@ -8,10 +8,14 @@ import type { PeriodParams } from "@/lib/balance/load";
 export function exportBaseName({
 	date,
 	month,
+	range,
 	week,
 	year,
 }: PeriodParams): string {
 	if (year) return `mi-negocio-${year}`;
+	// range arrives as "from_to" (both ISO); both ends already sort
+	// chronologically, so just swap the separator for readability.
+	if (range) return `mi-negocio-${range.replace("_", "-a-")}`;
 	if (month) {
 		// month arrives as "MMM-yyyy" (e.g. "jun-2026"); normalize to "2026-06" so
 		// filenames sort chronologically.

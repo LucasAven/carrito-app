@@ -9,11 +9,13 @@ import Section from "@/components/section";
 import { InternalRoutes } from "@/constants/routes";
 import { getPeriodLabel, loadBalanceEntries } from "@/lib/balance/load";
 import {
+	getDefaultRangeUrl,
 	getFullDateIso,
 	getRecentYears,
 	getTodaysDate,
 	getTwelveMonthsFromNow,
 	getYearInWeekRanges,
+	parseRangeUrl,
 } from "@/utils";
 
 export default async function BalancePage({
@@ -22,6 +24,7 @@ export default async function BalancePage({
 	searchParams: Promise<{
 		date: string;
 		month: string;
+		range: string;
 		week: string;
 		year: string;
 	}>;
@@ -31,11 +34,12 @@ export default async function BalancePage({
 	const week = resolvedSearchParams?.week;
 	const month = resolvedSearchParams?.month;
 	const year = resolvedSearchParams?.year;
+	const range = resolvedSearchParams?.range;
 
 	// if the date is not provided or has an invalid format (and there's no week,
-	// month or year filter set), redirect to the URL with the current date
+	// month, year or range filter set), redirect to the URL with the current date
 	if (!date || new Date(date).toString() === "Invalid Date") {
-		if (!week && !month && !year) {
+		if (!week && !month && !year && !range) {
 			const todayDate = getTodaysDate();
 			redirect(`${InternalRoutes.balance}?date=${todayDate}`);
 		}
@@ -104,12 +108,21 @@ export default async function BalancePage({
 		}
 	}
 
+	if (range) {
+		const parsed = parseRangeUrl(range);
+		// Malformed span or a start in the future: fall back to the default
+		// "Personalizado" seed rather than rendering an empty/garbage period.
+		if (!parsed || isFuture(new Date(`${parsed.from}T00:00:00`))) {
+			redirect(`${InternalRoutes.balance}?range=${getDefaultRangeUrl()}`);
+		}
+	}
+
 	const convertedSearchParams = new URLSearchParams(resolvedSearchParams);
 	const { earnings, entries, expenses, total } = await loadBalanceEntries(
 		convertedSearchParams,
 	);
 
-	const periodLabel = getPeriodLabel({ date, month, week, year });
+	const periodLabel = getPeriodLabel({ date, month, range, week, year });
 
 	return (
 		<Section className="flex min-h-0 flex-1 flex-col">
@@ -125,25 +138,7 @@ export default async function BalancePage({
 							/>
 						</Suspense>
 						<EmptyState
-							accent="brand"
 							description="Registrá tu primera venta o gasto para verlo acá."
-							icon={
-								<svg
-									aria-hidden="true"
-									fill="none"
-									height="40"
-									stroke="currentColor"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="1.8"
-									viewBox="0 0 24 24"
-									width="40"
-								>
-									<path d="M5 3.5l1.6 1.4L8.2 3.5l1.6 1.4 1.6-1.4 1.6 1.4 1.6-1.4 1.6 1.4L19 3.5V20l-1.6-1.4-1.6 1.4-1.6-1.4-1.6 1.4-1.6-1.4-1.6 1.4L6.6 18.6 5 20z" />
-									<line x1="8" x2="16" y1="9" y2="9" />
-									<line x1="8" x2="14" y1="13" y2="13" />
-								</svg>
-							}
 							title="Todavía no hay movimientos"
 						/>
 					</>

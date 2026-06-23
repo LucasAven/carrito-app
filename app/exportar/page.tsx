@@ -19,6 +19,7 @@ export default async function ExportPage({
 	searchParams: Promise<{
 		date?: string;
 		month?: string;
+		range?: string;
 		week?: string;
 		year?: string;
 	}>;
@@ -28,7 +29,11 @@ export default async function ExportPage({
 	// Default to today when the page is opened without a scope (e.g. a bare
 	// /exportar visit), mirroring the Balance ledger's own default.
 	const params =
-		resolved.date || resolved.week || resolved.month || resolved.year
+		resolved.date ||
+		resolved.week ||
+		resolved.month ||
+		resolved.year ||
+		resolved.range
 			? resolved
 			: { date: getTodaysDate() };
 

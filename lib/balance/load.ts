@@ -15,11 +15,13 @@ import {
 	convertUrlWeekRangeToWeeksDates,
 	getFiltersFromSearchParams,
 	getTodaysDate,
+	parseRangeUrl,
 } from "@/utils";
 
 export interface PeriodParams {
 	date?: string;
 	month?: string;
+	range?: string;
 	week?: string;
 	year?: string;
 }
@@ -30,12 +32,25 @@ export interface PeriodParams {
 export function getPeriodLabel({
 	date,
 	month,
+	range,
 	week,
 	year,
 }: PeriodParams): string {
 	try {
 		if (year) return `Balance de ${year}`;
 		if (week) return "Balance de la semana";
+		if (range) {
+			const parsed = parseRangeUrl(range);
+			if (parsed) {
+				const from = new Date(`${parsed.from}T00:00:00`);
+				const to = new Date(`${parsed.to}T00:00:00`);
+				return `Del ${format(from, "d MMM", { locale: es })} al ${format(
+					to,
+					"d MMM yyyy",
+					{ locale: es },
+				)}`;
+			}
+		}
 		if (month) {
 			const parsed = parse(month, "MMM-yyyy", new Date());
 			const name = format(parsed, "MMMM", { locale: es });
@@ -63,6 +78,7 @@ export async function loadBalanceEntries(
 	const week = searchParams.get(URL_FILTERS.WEEK) ?? "";
 	const month = searchParams.get(URL_FILTERS.MONTH) ?? "";
 	const year = searchParams.get(URL_FILTERS.YEAR) ?? "";
+	const range = searchParams.get(URL_FILTERS.RANGE) ?? "";
 	const filters = getFiltersFromSearchParams(searchParams);
 	const options = { paymentTypes: filters.paymentTypes };
 
@@ -79,6 +95,13 @@ export async function loadBalanceEntries(
 		entries = await listEntriesByMonth(month, options);
 	} else if (year) {
 		entries = await listEntriesByYear(year, options);
+	} else if (range) {
+		// A custom range is just a bounded span, so it rides the same start/end
+		// query the week/month/year scopes resolve down to.
+		const parsed = parseRangeUrl(range);
+		if (parsed) {
+			entries = await listEntriesByWeek(parsed.from, parsed.to, options);
+		}
 	}
 
 	return { entries, ...summarizeEntries(entries) };

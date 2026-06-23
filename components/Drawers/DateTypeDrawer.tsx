@@ -9,6 +9,7 @@ import { DrawerBase } from "./DrawerBase";
 
 import { InternalRoutes, URL_FILTERS } from "@/constants/routes";
 import {
+	getDefaultRangeUrl,
 	getRecentYears,
 	getTodaysDate,
 	getTwelveMonthsFromNow,
@@ -26,7 +27,9 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 			? "month"
 			: searchParams.get(URL_FILTERS.YEAR)
 				? "year"
-				: "date";
+				: searchParams.get(URL_FILTERS.RANGE)
+					? "range"
+					: "date";
 
 	const options = [
 		{
@@ -51,6 +54,13 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 			key: "year" as const,
 			label: "Este año",
 			query: { [URL_FILTERS.YEAR]: getRecentYears().at(-1) },
+		},
+		{
+			// Seeds the last-7-days span; the Operator fine-tunes either end from
+			// the range pill's calendar once this view is active.
+			key: "range" as const,
+			label: "Personalizado",
+			query: { [URL_FILTERS.RANGE]: getDefaultRangeUrl() },
 		},
 	];
 

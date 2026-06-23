@@ -15,40 +15,6 @@ interface EarnsCostsTabProps {
 	onDelete: (entry: Entry) => void;
 }
 
-const SalesEmptyIcon = (
-	<svg
-		aria-hidden="true"
-		fill="none"
-		height="40"
-		stroke="currentColor"
-		strokeLinecap="round"
-		strokeLinejoin="round"
-		strokeWidth="1.9"
-		viewBox="0 0 24 24"
-		width="40"
-	>
-		<path d="M16 7l-9 9" />
-		<path d="M9 7h7v7" />
-	</svg>
-);
-
-const ExpensesEmptyIcon = (
-	<svg
-		aria-hidden="true"
-		fill="none"
-		height="40"
-		stroke="currentColor"
-		strokeLinecap="round"
-		strokeLinejoin="round"
-		strokeWidth="2"
-		viewBox="0 0 24 24"
-		width="40"
-	>
-		<circle cx="12" cy="12" r="9" />
-		<path d="M8.5 12.5l2.2 2.2 4.8-5" />
-	</svg>
-);
-
 const formatAmount = (value: number) =>
 	new Intl.NumberFormat("es-AR", {
 		currency: "ARS",
@@ -80,16 +46,12 @@ const TabPanel = ({
 		{entries.length === 0 ? (
 			isEarnTab ? (
 				<EmptyState
-					accent="earn"
 					description="Cuando registres una venta va a aparecer en esta lista."
-					icon={SalesEmptyIcon}
 					title="Sin ventas todavía"
 				/>
 			) : (
 				<EmptyState
-					accent="earn"
 					description="¡Buenísimo! Todavía no registraste gastos. Toda la venta es ganancia."
-					icon={ExpensesEmptyIcon}
 					title="Sin gastos todavía"
 				/>
 			)
