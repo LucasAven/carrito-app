@@ -232,6 +232,45 @@ export const getDateAndPreviousDays = (
 export const isSameDate = (date1: string | Date, date2: string | Date) =>
   isEqual(getFullDateIso(date1), getFullDateIso(date2));
 
+// A custom date range is encoded "from_to" with both ends ISO (yyyy-MM-dd).
+// ISO date strings compare lexically the same as chronologically, so ordering
+// checks need no parsing.
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Parses a "from_to" range param into its two ISO ends, or null when malformed
+ * (bad shape, invalid day, or from after to).
+ * @example
+ * parseRangeUrl("2026-06-01_2026-06-23")
+ * //=> { from: "2026-06-01", to: "2026-06-23" }
+ */
+export const parseRangeUrl = (
+  range: string,
+): { from: string; to: string } | null => {
+  const [from, to] = range.split("_");
+  if (!ISO_DATE.test(from ?? "") || !ISO_DATE.test(to ?? "")) return null;
+  if (
+    new Date(`${from}T00:00:00`).toString() === "Invalid Date" ||
+    new Date(`${to}T00:00:00`).toString() === "Invalid Date"
+  ) {
+    return null;
+  }
+  if (from > to) return null;
+  return { from, to };
+};
+
+/**
+ * Seed range for the "Personalizado" period: the last 7 days ending today. The
+ * Operator refines it from there in the range calendar.
+ * @example
+ * getDefaultRangeUrl()
+ * //=> "2026-06-17_2026-06-23"
+ */
+export const getDefaultRangeUrl = () => {
+  const today = new Date();
+  return `${getFullDateIso(subDays(today, 6))}_${getFullDateIso(today)}`;
+};
+
 export const getFiltersFromSearchParams = (
   searchParams: URLSearchParams,
 ): BalanceFilters => {
@@ -250,12 +289,15 @@ export const getFiltersFromSearchParams = (
 
   const year = searchParams.get(URL_FILTERS.YEAR);
 
+  const range = searchParams.get(URL_FILTERS.RANGE);
+
   if (!date && week) {
     return {
       date: "",
       label: labelFilter ?? "",
       month: "",
       paymentTypes: paymentFilters ?? [],
+      range: "",
       week,
       year: "",
     };
@@ -267,6 +309,7 @@ export const getFiltersFromSearchParams = (
       label: labelFilter ?? "",
       month: month as MonthFilter,
       paymentTypes: paymentFilters ?? [],
+      range: "",
       week: "",
       year: "",
     };
@@ -278,17 +321,31 @@ export const getFiltersFromSearchParams = (
       label: labelFilter ?? "",
       month: "",
       paymentTypes: paymentFilters ?? [],
+      range: "",
       week: "",
       year,
     };
   }
 
-  // if there's no week/month/year filter, return the date filter (or today's date)
+  if (!date && !week && !month && !year && range) {
+    return {
+      date: "",
+      label: labelFilter ?? "",
+      month: "",
+      paymentTypes: paymentFilters ?? [],
+      range,
+      week: "",
+      year: "",
+    };
+  }
+
+  // if there's no week/month/year/range filter, return the date filter (or today's date)
   return {
     date: date ?? getTodaysDate(),
     label: labelFilter ?? "",
     month: "",
     paymentTypes: paymentFilters ?? [],
+    range: "",
     week: "",
     year: "",
   };

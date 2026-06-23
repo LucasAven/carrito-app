@@ -47,6 +47,14 @@ function Calendar({
 				day: "rounded-full h-10 w-10 p-0 font-display font-bold text-ink dark:text-ink-dark hover:bg-track dark:bg-track-dark",
 				day_selected:
 					"bg-amber text-white shadow-[0_3px_8px_rgba(245,165,36,0.4)]",
+				// Range mode (RangeDrawer): the two ends read as filled amber
+				// circles, the days between as a lighter amber fill.
+				day_range_start:
+					"!bg-amber text-white shadow-[0_3px_8px_rgba(245,165,36,0.4)]",
+				day_range_end:
+					"!bg-amber text-white shadow-[0_3px_8px_rgba(245,165,36,0.4)]",
+				day_range_middle:
+					"!bg-amber/15 !text-ink dark:!text-ink-dark !shadow-none",
 				day_today:
 					"!bg-brand text-white shadow-[0_4px_10px_rgba(224,97,62,0.42)]",
 				day_outside: "text-disabled dark:text-disabled-dark font-semibold",

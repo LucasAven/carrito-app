@@ -6,8 +6,15 @@ import { usePathname } from "next/navigation";
 import { CreateBalanceDrawer, CreateExpenseDrawer } from "@/components/Drawers";
 
 // Routes where the quick-entry actions don't belong: the auth flow (no session
-// yet), the Siri connection screen, and the stats page (a reflection view).
-const HIDDEN_PREFIXES = ["/login", "/signup", "/conectar-siri", "/stats"];
+// yet), the Siri connection screen, the stats page (a reflection view) and the
+// export report (a read-only document view).
+const HIDDEN_PREFIXES = [
+	"/login",
+	"/signup",
+	"/conectar-siri",
+	"/stats",
+	"/exportar",
+];
 
 const EntryActions = () => {
 	const pathname = usePathname();
@@ -31,7 +38,7 @@ const EntryActions = () => {
 			<Suspense fallback={null}>
 				<CreateExpenseDrawer>
 					<button
-						className="border-cost dark:border-cost bg-[#fbe7e1] dark:bg-[#3a1913] font-display text-cost dark:text-white pointer-events-auto flex-1 rounded-full border-2 px-3 py-3.5 text-[15px] font-extrabold"
+						className="border-cost dark:border-cost font-display text-cost pointer-events-auto flex-1 rounded-full border-2 bg-[#fbe7e1] px-3 py-3.5 text-[15px] font-extrabold dark:bg-[#3a1913] dark:text-white"
 						type="button"
 					>
 						Gasto

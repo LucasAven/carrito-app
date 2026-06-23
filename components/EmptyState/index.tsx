@@ -1,47 +1,43 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import { cn } from "@/utils/cn";
 
 interface EmptyStateProps {
-	accent: "brand" | "earn";
 	description: string;
-	icon: ReactNode;
+	showIcon?: boolean;
 	title: string;
 }
 
-const ACCENT_CLASSES = {
-	brand: {
-		circle: "bg-brand/12",
-		icon: "text-brand",
-	},
-	earn: {
-		circle: "bg-earn/12 dark:bg-earn-dark/12",
-		icon: "text-earn dark:text-earn-dark",
-	},
-} as const;
-
 export const EmptyState: FC<EmptyStateProps> = ({
-	accent,
 	description,
-	icon,
+	showIcon = false,
 	title,
 }) => {
-	const accentClasses = ACCENT_CLASSES[accent];
-
 	return (
-		<div
-			className={cn(
-				"flex flex-1 flex-col items-center justify-center px-9 text-center",
-				accent === "brand" ? "py-5" : "pb-5",
-			)}
-		>
+		<div className="flex flex-1 flex-col items-center justify-center px-9 text-center py-5">
 			<div
 				className={cn(
-					"mb-4.5 flex size-23 items-center justify-center rounded-full",
-					accentClasses.circle,
+					"mb-4.5 flex size-23 items-center justify-center rounded-full bg-earn/12 dark:bg-earn-dark/12",
+					{ hidden: !showIcon },
 				)}
 			>
-				<span className={accentClasses.icon}>{icon}</span>
+				<span className="text-earn dark:text-earn-dark">
+					<svg
+						aria-hidden="true"
+						fill="none"
+						height="40"
+						stroke="currentColor"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						strokeWidth="1.8"
+						viewBox="0 0 24 24"
+						width="40"
+					>
+						<line x1="4" x2="4" y1="20" y2="10" />
+						<line x1="12" x2="12" y1="20" y2="4" />
+						<line x1="20" x2="20" y1="20" y2="14" />
+					</svg>
+				</span>
 			</div>
 			<p className="font-display text-ink dark:text-ink-dark text-[21px] font-bold">
 				{title}

@@ -31,6 +31,9 @@ export interface BalanceFilters {
   label: string;
   month: MonthFilter;
   paymentTypes: PaymentType[];
+  // A custom Operator-picked span, encoded "YYYY-MM-DD_YYYY-MM-DD". Distinct from
+  // the bounded week/month/year scopes: it can be any length and span years.
+  range: string;
   week: string;
   year: string;
 }

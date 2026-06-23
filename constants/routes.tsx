@@ -28,6 +28,7 @@ export enum URL_FILTERS {
   LABEL = "label",
   MONTH = "month",
   PAYMENT_TYPE = "payment_type",
+  RANGE = "range",
   WEEK = "week",
   YEAR = "year",
 }
