@@ -36,26 +36,24 @@ export default async function BalancePage({
 	const year = resolvedSearchParams?.year;
 	const range = resolvedSearchParams?.range;
 
-	// if the date is not provided or has an invalid format (and there's no week,
-	// month, year or range filter set), redirect to the URL with the current date
-	if (!date || new Date(date).toString() === "Invalid Date") {
-		if (!week && !month && !year && !range) {
-			const todayDate = getTodaysDate();
-			redirect(`${InternalRoutes.balance}?date=${todayDate}`);
-		}
-	}
-
+	// The bare /balance URL IS the "today" view: it renders directly instead of
+	// redirecting to ?date=<today>. Stamping a snapshot date into the address
+	// bar meant bookmarks and home-screen shortcuts saved from the default view
+	// kept reopening the app frozen on that day.
 	if (date) {
+		// a malformed date falls back to the clean default view (today)
+		if (new Date(date).toString() === "Invalid Date") {
+			redirect(InternalRoutes.balance);
+		}
 		// if the date is not in the correct format, redirect to the URL with the correct one
 		// i.e. ?date=2024-3-20 =>  ?date=2024-03-20
 		// i.e. ?date=2024-03- =>  ?date=2024-03-01
 		if (getFullDateIso(date) !== date) {
 			redirect(`${InternalRoutes.balance}?date=${getFullDateIso(date)}`);
 		}
-		// if date is in the future, redirect to the URL with the current date
+		// a future date also falls back to today, via the clean default view
 		if (isFuture(new Date(date))) {
-			const todayDate = getTodaysDate();
-			redirect(`${InternalRoutes.balance}?date=${todayDate}`);
+			redirect(InternalRoutes.balance);
 		}
 	}
 
@@ -118,11 +116,26 @@ export default async function BalancePage({
 	}
 
 	const convertedSearchParams = new URLSearchParams(resolvedSearchParams);
+
+	// No scope in the URL means "today" (the default view renders it without
+	// putting it in the address bar).
+	const hasScope = Boolean(date || week || month || year || range);
+	const effectiveDate = hasScope ? date : getTodaysDate();
+	if (!hasScope) {
+		convertedSearchParams.set("date", effectiveDate);
+	}
+
 	const { earnings, entries, expenses, total } = await loadBalanceEntries(
 		convertedSearchParams,
 	);
 
-	const periodLabel = getPeriodLabel({ date, month, range, week, year });
+	const periodLabel = getPeriodLabel({
+		date: effectiveDate,
+		month,
+		range,
+		week,
+		year,
+	});
 
 	return (
 		<Section className="flex min-h-0 flex-1 flex-col">

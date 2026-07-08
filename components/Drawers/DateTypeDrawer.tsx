@@ -11,7 +11,6 @@ import { InternalRoutes, URL_FILTERS } from "@/constants/routes";
 import {
 	getDefaultRangeUrl,
 	getRecentYears,
-	getTodaysDate,
 	getTwelveMonthsFromNow,
 	getYearInWeekRanges,
 } from "@/utils";
@@ -35,7 +34,9 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 		{
 			key: "date" as const,
 			label: "Hoy",
-			query: { [URL_FILTERS.DATE]: getTodaysDate() },
+			// The bare /balance URL renders today's ledger; keeping it query-free
+			// means bookmarks saved from the default view never freeze a date.
+			query: {},
 		},
 		{
 			key: "week" as const,

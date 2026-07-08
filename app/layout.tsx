@@ -38,6 +38,13 @@ export const metadata: Metadata = {
 		template: APP_TITLE_TEMPLATE,
 	},
 	description: APP_DESCRIPTION,
+	// iOS: "Agregar a pantalla de inicio" opens standalone (no browser chrome)
+	// and honors the manifest's start_url instead of freezing the current URL.
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "default",
+		title: APP_DEFAULT_TITLE,
+	},
 	openGraph: {
 		type: "website",
 		siteName: APP_NAME,

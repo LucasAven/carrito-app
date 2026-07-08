@@ -3,8 +3,15 @@ import { type NextRequest, NextResponse } from "next/server";
 
 // /api/shortcut is authenticated by a personal bearer token inside the route
 // handler, not by a session cookie, so the middleware must not redirect it to
-// /login.
-const PUBLIC_ROUTES = ["/login", "/signup", "/auth", "/api/shortcut"];
+// /login. The manifest is fetched by the browser without credentials, so it
+// must be public for "Instalar app" to work.
+const PUBLIC_ROUTES = [
+  "/login",
+  "/signup",
+  "/auth",
+  "/api/shortcut",
+  "/manifest.webmanifest",
+];
 
 const isPublicRoute = (pathname: string) =>
   PUBLIC_ROUTES.some((route) => pathname.startsWith(route));

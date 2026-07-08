@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { InternalRoutes, InternalRoutesData, URL_FILTERS } from "@/constants/routes";
-import { getTodaysDate } from "@/utils";
+import { InternalRoutesData } from "@/constants/routes";
 
 const BottomNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   const pathname = usePathname();
@@ -22,15 +21,10 @@ const BottomNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
               key={label}
               aria-current={pathname.includes(href) ? "page" : undefined}
               className="text-muted dark:text-muted-dark aria-current:text-brand flex h-full w-full flex-col items-center justify-center space-y-1 aria-current:font-extrabold"
-              href={{
-                pathname: href,
-                // Only the Balance ledger is date-scoped; Resumen has its own
-                // year selector and takes no query params.
-                query:
-                  href === InternalRoutes.balance
-                    ? { [URL_FILTERS.DATE]: getTodaysDate() }
-                    : undefined,
-              }}
+              // The bare /balance URL already renders today's ledger; keeping
+              // the link query-free avoids baking a stale date into a link
+              // rendered on a previous day (long-lived mobile tabs).
+              href={href}
             >
               {icon}
               <span className="text-xs">{label}</span>

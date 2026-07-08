@@ -20,7 +20,10 @@ export const DatePicker = () => {
 
   return (
     <>
-      {date && !week && !month && !year && !range ? <DayPicker /> : null}
+      {/* The bare /balance URL (no scope params) is the "today" ledger, so the
+          day carousel is also the default picker; DayPicker itself falls back
+          to today when the date param is absent. */}
+      {!week && !month && !year && !range ? <DayPicker /> : null}
       {week && !date && !month && !year && !range ? <WeekPicker /> : null}
       {month && !date && !week && !year && !range ? <MonthPicker /> : null}
       {year && !date && !week && !month && !range ? <YearPicker /> : null}
