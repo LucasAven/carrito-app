@@ -11,6 +11,9 @@ The fix is an external cron that calls the database every hour. It has to come
 from outside Supabase: a `pg_cron` job inside the database is not documented to
 count, and it stops with the project anyway, so it can never wake it back up.
 
+The reasoning behind this shape, and what was rejected, is in
+[ADR-0010](./adr/0010-external-keepalive-cron-and-watchdog.md).
+
 ## What the migration adds
 
 `supabase/migrations/20260921120000_keepalive_ping.sql` adds two functions,
