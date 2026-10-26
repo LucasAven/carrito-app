@@ -15,6 +15,8 @@ interface ListOptions {
 const BASE_SELECT =
   "id, user_id, kind, label, amount, payment, occurred_on, created_at, deleted_at, extraordinary";
 
+const PAGE_SIZE = 1000;
+
 // Postgrest returns numeric(12,2) as string. Normalize at the boundary so the
 // rest of the app can do arithmetic without thinking about it.
 const normalize = (rows: unknown[]): Entry[] =>
@@ -26,27 +28,56 @@ const normalize = (rows: unknown[]): Entry[] =>
     };
   });
 
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
+
+const entriesQuery = (supabase: SupabaseClient, options?: ListOptions) => {
+  const query = supabase
+    .from("entries")
+    .select(BASE_SELECT, { count: "exact" })
+    .is("deleted_at", null);
+
+  return options?.paymentTypes?.length
+    ? query.in("payment", options.paymentTypes)
+    : query;
+};
+
+type EntriesQuery = ReturnType<typeof entriesQuery>;
+
+// PostgREST caps every response at the project's max_rows (1000 by default)
+// and a capped response looks exactly like a complete one, so a long year or
+// the whole history would silently lose its newest rows. Keep requesting the
+// next slice until the exact count is reached. Advancing by what actually came
+// back keeps this correct whatever max_rows is set to, and the id tiebreaker
+// keeps the slices from overlapping.
+async function listAllPages(
+  narrow: (query: EntriesQuery) => EntriesQuery,
+  options?: ListOptions,
+): Promise<Entry[]> {
+  const supabase = await createClient();
+  const rows: Entry[] = [];
+
+  for (;;) {
+    const { count, data, error } = await narrow(entriesQuery(supabase, options))
+      .order("id", { ascending: true })
+      .range(rows.length, rows.length + PAGE_SIZE - 1);
+    if (error) throw error;
+
+    rows.push(...normalize(data ?? []));
+    if (!data?.length || rows.length >= (count ?? 0)) return rows;
+  }
+}
+
 export async function listEntriesByDate(
   date: string,
   options?: ListOptions,
 ): Promise<Entry[]> {
   if (!date) return [];
 
-  const supabase = await createClient();
-  let query = supabase
-    .from("entries")
-    .select(BASE_SELECT)
-    .is("deleted_at", null)
-    .eq("occurred_on", date)
-    .order("created_at", { ascending: true });
-
-  if (options?.paymentTypes?.length) {
-    query = query.in("payment", options.paymentTypes);
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return normalize(data ?? []);
+  return listAllPages(
+    (query) =>
+      query.eq("occurred_on", date).order("created_at", { ascending: true }),
+    options,
+  );
 }
 
 export async function listEntriesByWeek(
@@ -56,23 +87,15 @@ export async function listEntriesByWeek(
 ): Promise<Entry[]> {
   if (!start || !end) return [];
 
-  const supabase = await createClient();
-  let query = supabase
-    .from("entries")
-    .select(BASE_SELECT)
-    .is("deleted_at", null)
-    .gte("occurred_on", start)
-    .lte("occurred_on", end)
-    .order("occurred_on", { ascending: true })
-    .order("created_at", { ascending: true });
-
-  if (options?.paymentTypes?.length) {
-    query = query.in("payment", options.paymentTypes);
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return normalize(data ?? []);
+  return listAllPages(
+    (query) =>
+      query
+        .gte("occurred_on", start)
+        .lte("occurred_on", end)
+        .order("occurred_on", { ascending: true })
+        .order("created_at", { ascending: true }),
+    options,
+  );
 }
 
 export async function listEntriesByMonth(
@@ -103,20 +126,13 @@ export async function listEntriesByYear(
 }
 
 export async function listAllEntries(options?: ListOptions): Promise<Entry[]> {
-  const supabase = await createClient();
-  let query = supabase
-    .from("entries")
-    .select(BASE_SELECT)
-    .is("deleted_at", null)
-    .order("occurred_on", { ascending: true });
-
-  if (options?.paymentTypes?.length) {
-    query = query.in("payment", options.paymentTypes);
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return normalize(data ?? []);
+  return listAllPages(
+    (query) =>
+      query
+        .order("occurred_on", { ascending: true })
+        .order("created_at", { ascending: true }),
+    options,
+  );
 }
 
 // Postgres rejects a malformed date literal, so a junk span reads as empty here
