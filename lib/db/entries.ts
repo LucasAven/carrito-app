@@ -118,6 +118,10 @@ export async function listAllEntries(options?: ListOptions): Promise<Entry[]> {
   return normalize(data ?? []);
 }
 
+// Postgres rejects a malformed date literal, so a junk span reads as empty here
+// rather than throwing out of the page that asked for it.
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
 // Sums the extraordinary expenses booked in a span. It deliberately takes no
 // payment filter: the Balance card reports the whole month (or year, or period)
 // regardless of how the Operator paid, while Ingresos and Egresos keep
@@ -127,7 +131,7 @@ export async function sumExtraordinaryExpenses(
   start: string,
   end: string,
 ): Promise<number> {
-  if (!start || !end) return 0;
+  if (!ISO_DATE.test(start) || !ISO_DATE.test(end)) return 0;
 
   const supabase = await createClient();
   const { data, error } = await supabase

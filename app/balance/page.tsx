@@ -125,9 +125,8 @@ export default async function BalancePage({
 		convertedSearchParams.set("date", effectiveDate);
 	}
 
-	const { earnings, entries, expenses, total } = await loadBalanceEntries(
-		convertedSearchParams,
-	);
+	const { earnings, entries, expenses, extraordinarySection, total } =
+		await loadBalanceEntries(convertedSearchParams);
 
 	const periodLabel = getPeriodLabel({
 		date: effectiveDate,
@@ -146,6 +145,7 @@ export default async function BalancePage({
 							<Balance
 								earnings={earnings}
 								expenses={expenses}
+								extraordinary={extraordinarySection}
 								periodLabel={periodLabel}
 								total={total}
 							/>
@@ -157,7 +157,11 @@ export default async function BalancePage({
 					</>
 				) : (
 					<Suspense fallback={null}>
-						<BalanceView entries={entries} periodLabel={periodLabel} />
+						<BalanceView
+							entries={entries}
+							extraordinary={extraordinarySection}
+							periodLabel={periodLabel}
+						/>
 					</Suspense>
 				)}
 			</div>
