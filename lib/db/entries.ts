@@ -12,7 +12,7 @@ interface ListOptions {
 }
 
 const BASE_SELECT =
-  "id, user_id, kind, label, amount, payment, occurred_on, created_at, deleted_at";
+  "id, user_id, kind, label, amount, payment, occurred_on, created_at, deleted_at, extraordinary";
 
 // Postgrest returns numeric(12,2) as string. Normalize at the boundary so the
 // rest of the app can do arithmetic without thinking about it.
@@ -118,18 +118,48 @@ export async function listAllEntries(options?: ListOptions): Promise<Entry[]> {
   return normalize(data ?? []);
 }
 
+// Sums the extraordinary expenses booked in a span. It deliberately takes no
+// payment filter: the Balance card reports the whole month (or year, or period)
+// regardless of how the Operator paid, while Ingresos and Egresos keep
+// respecting the filter. The check constraint already limits the flag to
+// expenses, so `kind` needs no clause here.
+export async function sumExtraordinaryExpenses(
+  start: string,
+  end: string,
+): Promise<number> {
+  if (!start || !end) return 0;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("entries")
+    .select("amount")
+    .is("deleted_at", null)
+    .eq("extraordinary", true)
+    .gte("occurred_on", start)
+    .lte("occurred_on", end);
+
+  if (error) throw error;
+  return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);
+}
+
 export interface EntryTotals {
   earnings: number;
   expenses: number;
+  extraordinary: number;
   total: number;
 }
 
+// `expenses` is ordinary expenses only, so `total` is the net the Operator
+// lives by: an extraordinary spend is reported on its own and never nets off a
+// day's profit.
 export function summarizeEntries(entries: Entry[]): EntryTotals {
   let earnings = 0;
   let expenses = 0;
+  let extraordinary = 0;
   for (const entry of entries) {
     if (entry.kind === "sale") earnings += entry.amount;
+    else if (entry.extraordinary) extraordinary += entry.amount;
     else expenses += entry.amount;
   }
-  return { earnings, expenses, total: earnings - expenses };
+  return { earnings, expenses, extraordinary, total: earnings - expenses };
 }
