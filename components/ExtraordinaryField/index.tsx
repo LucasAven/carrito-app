@@ -32,7 +32,7 @@ export function ExtraordinaryField<T extends FieldValues>({
 			/>
 			{/* The tick is always in the box and only becomes visible when checked,
 			    so the whole state change rides sibling selectors off the input. */}
-			<span className="border-line dark:border-line-dark peer-checked:bg-cost flex size-5.5 shrink-0 items-center justify-center rounded-md border-2 text-transparent peer-checked:border-transparent peer-checked:text-white">
+			<span className="border-line dark:border-line-dark peer-checked:bg-cost peer-focus-visible:ring-cost/40 flex size-5.5 shrink-0 items-center justify-center rounded-md border-2 text-transparent peer-checked:border-transparent peer-checked:text-white peer-focus-visible:ring-2">
 				<CheckIcon size={14} strokeWidth={3.5} />
 			</span>
 			<span className="text-ink dark:text-ink-dark text-[15px] font-semibold">

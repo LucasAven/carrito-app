@@ -82,9 +82,7 @@ export async function createExpense(
 export interface UpdateEntryInput {
 	amount: string | number;
 	date: Date | string;
-	// Left out by the Sale form, which has no such checkbox, and false is what
-	// those rows already hold.
-	extraordinary?: boolean;
+	extraordinary: boolean;
 	label: string;
 	paymentType: string;
 }
@@ -110,7 +108,7 @@ export async function updateEntry(
 		.from("entries")
 		.update({
 			amount,
-			extraordinary: patch.extraordinary === true,
+			extraordinary: patch.extraordinary,
 			label: patch.label.trim(),
 			occurred_on: occurredOn,
 			payment: patch.paymentType,
