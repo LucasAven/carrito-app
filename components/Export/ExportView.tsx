@@ -75,6 +75,7 @@ const ExportView: FC<ExportViewProps> = ({
 }) => {
 	const [busy, setBusy] = useState(false);
 	const isEmpty = entries.length === 0;
+	const ordinaryCount = entries.filter((entry) => !entry.extraordinary).length;
 
 	const handleCsv = async () => {
 		if (isEmpty || busy) return;
@@ -261,8 +262,12 @@ const ExportView: FC<ExportViewProps> = ({
 							<tfoot>
 								<tr className="border-t-2 border-[#3a2a22] font-extrabold">
 									<td className="py-2.5 pr-1.5 sm:pr-2" colSpan={3}>
-										Neto ({entries.length}{" "}
-										{entries.length === 1 ? "movimiento" : "movimientos"})
+										Neto ({ordinaryCount}{" "}
+										{ordinaryCount === 1 ? "movimiento" : "movimientos"}
+										{ordinaryCount < entries.length
+											? ", sin extraordinarios"
+											: ""}
+										)
 									</td>
 									<td
 										className={cn(
