@@ -5,6 +5,7 @@ export type StatMetric = "gross" | "net";
 /** The minimal entry shape the stats page needs (serialized server to client). */
 export interface StatEntry {
 	amount: number;
+	extraordinary: boolean;
 	kind: "sale" | "expense";
 	occurred_on: string; // yyyy-MM-dd
 }
@@ -66,6 +67,8 @@ export const MONTH_LABELS_LONG = [
 interface DayRollup {
 	date: string;
 	expenses: number;
+	// Kept apart from `expenses` so no panel can pick it up by accident.
+	extraordinary: number;
 	month: number;
 	// 0=Mon .. 6=Sun
 	sales: number;
@@ -92,7 +95,10 @@ export interface StatsSummary {
 	/** Total (gross or net) over worked days. */
 	averagePerWorkedDay: number;
 	net: number;
+	/** Ordinary expenses only. */
 	totalExpenses: number;
+	/** Reported on its own and left out of every other figure here. */
+	totalExtraordinary: number;
 	totalSales: number;
 	/** Days with at least one sale. */
 	workedDays: number;
@@ -119,6 +125,7 @@ function rollupByDay(entries: StatEntry[]): DayRollup[] {
 			rollup = {
 				date: entry.occurred_on,
 				expenses: 0,
+				extraordinary: 0,
 				month: getMonth(parsed),
 				sales: 0,
 				salesCount: 0,
@@ -132,6 +139,8 @@ function rollupByDay(entries: StatEntry[]): DayRollup[] {
 		if (entry.kind === "sale") {
 			rollup.sales += entry.amount;
 			rollup.salesCount += 1;
+		} else if (entry.extraordinary) {
+			rollup.extraordinary += entry.amount;
 		} else {
 			rollup.expenses += entry.amount;
 		}
@@ -179,10 +188,12 @@ export function computeStats(
 	// Summary: totals span all days; worked-day math uses sales-days only.
 	let totalSales = 0;
 	let totalExpenses = 0;
+	let totalExtraordinary = 0;
 	let workedDays = 0;
 	for (const r of rollups) {
 		totalSales += r.sales;
 		totalExpenses += r.expenses;
+		totalExtraordinary += r.extraordinary;
 		if (isSalesDay(r)) workedDays += 1;
 	}
 	const net = totalSales - totalExpenses;
@@ -191,6 +202,7 @@ export function computeStats(
 		averagePerWorkedDay: workedDays > 0 ? summaryTotal / workedDays : 0,
 		net,
 		totalExpenses,
+		totalExtraordinary,
 		totalSales,
 		workedDays,
 	};

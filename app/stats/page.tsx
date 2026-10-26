@@ -9,6 +9,7 @@ export default async function StatsPage() {
 
 	const statEntries: StatEntry[] = entries.map((entry) => ({
 		amount: entry.amount,
+		extraordinary: entry.extraordinary,
 		kind: entry.kind,
 		occurred_on: entry.occurred_on,
 	}));

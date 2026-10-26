@@ -41,9 +41,8 @@ export default async function ExportPage({
 		params as Record<string, string>,
 	);
 
-	const { earnings, entries, expenses, total } = await loadBalanceEntries(
-		convertedSearchParams,
-	);
+	const { earnings, entries, expenses, extraordinary, total } =
+		await loadBalanceEntries(convertedSearchParams);
 
 	const periodLabel = getPeriodLabel(params);
 	const baseName = exportBaseName(params);
@@ -65,6 +64,7 @@ export default async function ExportPage({
 					earnings={earnings}
 					entries={entries}
 					expenses={expenses}
+					extraordinary={extraordinary}
 					generatedOn={generatedOn}
 					periodLabel={periodLabel}
 					total={total}

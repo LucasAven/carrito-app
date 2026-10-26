@@ -72,6 +72,11 @@ const TabPanel = ({
 									{PAYMENT_TYPE_LABELS[entry.payment]} ·{" "}
 									{format(new Date(`${entry.occurred_on}T00:00:00`), "dd MMM")}
 								</span>
+								{entry.extraordinary ? (
+									<span className="bg-cost/10 text-cost dark:bg-cost-dark/15 dark:text-cost-dark mt-1.5 ml-1.5 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold">
+										Extraordinario
+									</span>
+								) : null}
 							</div>
 							<span
 								className={cn(
@@ -98,7 +103,15 @@ const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries, onDelete }) => {
 	const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
 	const earnings = entries.filter((entry) => entry.kind === "sale");
-	const expenses = entries.filter((entry) => entry.kind === "expense");
+
+	// Extraordinary expenses lead the Egresos list: they are the ones missing
+	// from every total, so burying them among the ordinary rows would be the one
+	// place the Operator never finds them.
+	const allExpenses = entries.filter((entry) => entry.kind === "expense");
+	const expenses = [
+		...allExpenses.filter((entry) => entry.extraordinary),
+		...allExpenses.filter((entry) => !entry.extraordinary),
+	];
 
 	// Close the drawer immediately; the parent handles the optimistic removal,
 	// server delete and undo toast.

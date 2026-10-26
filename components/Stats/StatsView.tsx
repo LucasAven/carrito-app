@@ -236,6 +236,10 @@ const StatsView: FC<StatsViewProps> = ({ entries, years }) => {
 						value={formatAmount(stats.summary.totalExpenses)}
 					/>
 					<SummaryItem
+						label="Gastos extra."
+						value={formatAmount(stats.summary.totalExtraordinary)}
+					/>
+					<SummaryItem
 						label="Balance Total"
 						value={formatAmount(stats.summary.net)}
 					/>
