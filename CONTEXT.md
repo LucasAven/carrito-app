@@ -36,6 +36,10 @@ _Avoid_: Earning, income, ingreso (the singular).
 One outflow record (money going out). Surfaced in the UI as _Gasto_.
 _Avoid_: Cost, outflow, egreso (the singular).
 
+**Extraordinary Expense**:
+An Expense flagged as a sporadic, out-of-the-ordinary spend: buying a gas bottle, filling the car with fuel. Surfaced in the UI as _Gasto extraordinario_. Only an Expense can carry the flag. It is excluded from every money figure the app shows (Egresos, the Balance net, the Ingresos/Egresos tab totals, the Resumen totals and averages, the export report's net) and appears only as its own separate figure, which also ignores the payment-type filter (see [ADR-0011](./docs/adr/0011-extraordinary-expenses-excluded-from-totals.md)).
+_Avoid_: Extraordinary on its own (reads as an adjective, not a term), one-off, special expense, gasto grande.
+
 **Ingresos** (UI-only aggregate):
 Sum of Sales over a date range. Shown in the Balance card and tab label.
 _Avoid_: Using as a synonym for Sale.
