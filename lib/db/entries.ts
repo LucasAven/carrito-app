@@ -3,6 +3,7 @@ import { endOfMonth, parse, startOfMonth } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { PaymentType } from "@/types/balance";
 import type { Database } from "@/types/supabase";
+import { getFullDateIso } from "@/utils";
 
 export type Entry = Database["public"]["Tables"]["entries"]["Row"];
 export type EntryKind = Database["public"]["Enums"]["entry_kind"];
@@ -12,7 +13,7 @@ interface ListOptions {
 }
 
 const BASE_SELECT =
-  "id, user_id, kind, label, amount, payment, occurred_on, created_at, deleted_at";
+  "id, user_id, kind, label, amount, payment, occurred_on, created_at, deleted_at, extraordinary";
 
 // Postgrest returns numeric(12,2) as string. Normalize at the boundary so the
 // rest of the app can do arithmetic without thinking about it.
@@ -83,8 +84,8 @@ export async function listEntriesByMonth(
   const parsed = parse(month, "MMM-yyyy", new Date());
   if (parsed.toString() === "Invalid Date") return [];
 
-  const start = startOfMonth(parsed).toISOString().split("T")[0];
-  const end = endOfMonth(parsed).toISOString().split("T")[0];
+  const start = getFullDateIso(startOfMonth(parsed));
+  const end = getFullDateIso(endOfMonth(parsed));
 
   return listEntriesByWeek(start, end, options);
 }
@@ -118,18 +119,30 @@ export async function listAllEntries(options?: ListOptions): Promise<Entry[]> {
   return normalize(data ?? []);
 }
 
-export interface EntryTotals {
-  earnings: number;
-  expenses: number;
-  total: number;
-}
+// Postgres rejects a malformed date literal, so a junk span reads as empty here
+// rather than throwing out of the page that asked for it.
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-export function summarizeEntries(entries: Entry[]): EntryTotals {
-  let earnings = 0;
-  let expenses = 0;
-  for (const entry of entries) {
-    if (entry.kind === "sale") earnings += entry.amount;
-    else expenses += entry.amount;
-  }
-  return { earnings, expenses, total: earnings - expenses };
+// Sums the extraordinary expenses booked in a span. It deliberately takes no
+// payment filter: the Balance card reports the whole month (or year, or period)
+// regardless of how the Operator paid, while Ingresos and Egresos keep
+// respecting the filter. The check constraint already limits the flag to
+// expenses, so `kind` needs no clause here.
+export async function sumExtraordinaryExpenses(
+  start: string,
+  end: string,
+): Promise<number> {
+  if (!ISO_DATE.test(start) || !ISO_DATE.test(end)) return 0;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("entries")
+    .select("amount")
+    .is("deleted_at", null)
+    .eq("extraordinary", true)
+    .gte("occurred_on", start)
+    .lte("occurred_on", end);
+
+  if (error) throw error;
+  return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);
 }

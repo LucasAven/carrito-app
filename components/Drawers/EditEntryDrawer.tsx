@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Trash2Icon } from "lucide-react";
 
 import { AmountInput } from "../AmountInput";
+import { ExtraordinaryField } from "../ExtraordinaryField";
 import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { PaymentTypeField } from "../PaymentTypeField";
@@ -24,6 +25,7 @@ interface EditEntryDrawerProps {
 interface EntryFormValues {
 	amount: string;
 	date: string;
+	extraordinary: boolean;
 	label: string;
 	paymentType: string;
 }
@@ -47,6 +49,7 @@ export function EditEntryDrawer({
 		defaultValues: {
 			amount: "",
 			date: "",
+			extraordinary: false,
 			label: "",
 			paymentType: "",
 		},
@@ -57,6 +60,7 @@ export function EditEntryDrawer({
 		reset({
 			amount: String(entry.amount),
 			date: entry.occurred_on,
+			extraordinary: entry.extraordinary,
 			label: entry.label,
 			paymentType: entry.payment,
 		});
@@ -69,6 +73,7 @@ export function EditEntryDrawer({
 		const result = await updateEntry(entry.id, {
 			amount: data.amount,
 			date: data.date,
+			extraordinary: data.extraordinary,
 			label: data.label,
 			paymentType: data.paymentType,
 		});
@@ -161,6 +166,14 @@ export function EditEntryDrawer({
 					/>
 					<FormError error={errors.paymentType} />
 				</div>
+
+				{isExpense ? (
+					<ExtraordinaryField
+						id="edit-extraordinary"
+						name="extraordinary"
+						register={register}
+					/>
+				) : null}
 
 				{submitError && (
 					<p className="text-cost text-sm font-semibold">{submitError}</p>

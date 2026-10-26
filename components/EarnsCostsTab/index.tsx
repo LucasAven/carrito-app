@@ -60,7 +60,12 @@ const TabPanel = ({
 				{entries.map((entry) => (
 					<li key={entry.id}>
 						<button
-							className="bg-surface dark:bg-surface-dark flex w-full items-center gap-3 rounded-[18px] px-4 py-3.5 text-left shadow-[0_2px_9px_rgba(58,42,34,0.06)]"
+							className={cn(
+								"flex w-full items-center gap-3 rounded-[18px] px-4 py-3.5 text-left",
+								entry.extraordinary
+									? "bg-badge dark:bg-track-dark border-cost/45 dark:border-cost-dark/45 border-2 border-dashed"
+									: "bg-surface dark:bg-surface-dark shadow-[0_2px_9px_rgba(58,42,34,0.06)]",
+							)}
 							onClick={() => onEntryClick(entry)}
 							type="button"
 						>
@@ -72,6 +77,11 @@ const TabPanel = ({
 									{PAYMENT_TYPE_LABELS[entry.payment]} ·{" "}
 									{format(new Date(`${entry.occurred_on}T00:00:00`), "dd MMM")}
 								</span>
+								{entry.extraordinary ? (
+									<span className="bg-cost/10 text-cost dark:bg-cost-dark/15 dark:text-cost-dark mt-1.5 ml-1.5 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold">
+										Extraordinario
+									</span>
+								) : null}
 							</div>
 							<span
 								className={cn(
@@ -98,7 +108,15 @@ const EarnsCostsTab: FC<EarnsCostsTabProps> = ({ entries, onDelete }) => {
 	const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
 	const earnings = entries.filter((entry) => entry.kind === "sale");
-	const expenses = entries.filter((entry) => entry.kind === "expense");
+
+	// Extraordinary expenses lead the Egresos list: they are the ones missing
+	// from every total, so burying them among the ordinary rows would be the one
+	// place the Operator never finds them.
+	const allExpenses = entries.filter((entry) => entry.kind === "expense");
+	const expenses = [
+		...allExpenses.filter((entry) => entry.extraordinary),
+		...allExpenses.filter((entry) => !entry.extraordinary),
+	];
 
 	// Close the drawer immediately; the parent handles the optimistic removal,
 	// server delete and undo toast.

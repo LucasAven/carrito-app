@@ -40,7 +40,7 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 		},
 		{
 			key: "week" as const,
-			label: "Esta semana",
+			label: "Por semana",
 			query: {
 				[URL_FILTERS.WEEK]:
 					getYearInWeekRanges().weekRangesUrlTextFormat.at(-1),
@@ -48,12 +48,12 @@ export function DateTypeDrawer({ children }: { children: ReactNode }) {
 		},
 		{
 			key: "month" as const,
-			label: "Este mes",
+			label: "Por mes",
 			query: { [URL_FILTERS.MONTH]: getTwelveMonthsFromNow().at(-1) },
 		},
 		{
 			key: "year" as const,
-			label: "Este año",
+			label: "Por año",
 			query: { [URL_FILTERS.YEAR]: getRecentYears().at(-1) },
 		},
 		{

@@ -247,6 +247,10 @@ const StatsView: FC<StatsViewProps> = ({ entries, years }) => {
 						label="Promedio por día"
 						value={formatAmount(stats.summary.averagePerWorkedDay)}
 					/>
+					<SummaryItem
+						label="Gastos extra."
+						value={formatAmount(stats.summary.totalExtraordinary)}
+					/>
 				</div>
 			</Card>
 

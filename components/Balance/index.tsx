@@ -5,11 +5,15 @@ import { DownloadIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import type { ExtraordinarySection } from "@/lib/balance/load";
 import { cn } from "@/utils/cn";
 
 interface BalanceProps {
 	earnings: number;
 	expenses: number;
+	// Always rendered, $0 included, so the Operator can tell "nothing
+	// extraordinary this month" apart from "the app forgot about it".
+	extraordinary: ExtraordinarySection;
 	periodLabel?: string;
 	// Surfaces the "Exportar" pill in the card header. Off in the empty state,
 	// where there's nothing to hand the accountant.
@@ -27,6 +31,7 @@ const formatAmount = (value: number) =>
 export const Balance: FC<BalanceProps> = ({
 	earnings,
 	expenses,
+	extraordinary,
 	periodLabel = "Balance",
 	showExport = false,
 	total,
@@ -82,6 +87,14 @@ export const Balance: FC<BalanceProps> = ({
 						{formatAmount(expenses)}
 					</p>
 				</div>
+			</div>
+			<div className="relative mt-4 flex items-baseline justify-between gap-3 border-t border-white/15 pt-3">
+				<p className="text-[11.5px] font-bold text-[#d8c2b4]">
+					{extraordinary.label}
+				</p>
+				<p className="font-display text-base font-bold whitespace-nowrap text-white/85">
+					{formatAmount(extraordinary.total)}
+				</p>
 			</div>
 		</div>
 	);

@@ -4,8 +4,17 @@ import { PAYMENT_TYPE_LABELS } from "@/types/balance";
 // Spanish header, in the Operator's own domain terms (see CONTEXT.md). One row
 // per Entry, chronological. The amount is left as a raw two-decimal number with
 // a dot separator so a spreadsheet treats it as a number, not text; the Tipo
-// column carries the sign meaning (Venta is money in, Gasto is money out).
-const HEADER = ["Fecha", "Tipo", "Concepto", "Forma de pago", "Monto"];
+// column carries the sign meaning (Venta is money in, Gasto is money out), and
+// the Extraordinario column marks the rows the app leaves out of its own
+// totals, so the accountant can filter them the same way.
+const HEADER = [
+	"Fecha",
+	"Tipo",
+	"Concepto",
+	"Forma de pago",
+	"Monto",
+	"Extraordinario",
+];
 
 // RFC-4180 escaping: wrap in quotes and double any embedded quote whenever the
 // field holds a comma, quote or newline. Concepto is Operator free-text, so it
@@ -26,7 +35,7 @@ function toRow(cells: string[]): string {
  * when building the download Blob so spreadsheets read the accents correctly).
  * @example
  * entriesToCsv(entries)
- * //=> "Fecha,Tipo,Concepto,Forma de pago,Monto\n2026-06-01,Venta,Cafe,Efectivo,3500.00"
+ * //=> "Fecha,Tipo,Concepto,Forma de pago,Monto,Extraordinario\n2026-06-01,Venta,Cafe,Efectivo,3500.00,No"
  */
 export function entriesToCsv(entries: Entry[]): string {
 	const lines = [toRow(HEADER)];
@@ -39,6 +48,7 @@ export function entriesToCsv(entries: Entry[]): string {
 				entry.label,
 				PAYMENT_TYPE_LABELS[entry.payment],
 				entry.amount.toFixed(2),
+				entry.extraordinary ? "Sí" : "No",
 			]),
 		);
 	}

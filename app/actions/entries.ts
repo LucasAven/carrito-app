@@ -18,6 +18,12 @@ export interface CreateEntryInput {
 	paymentType: string;
 }
 
+// Only an Expense can be extraordinary, so the flag rides its own input type
+// instead of the shared one.
+export interface CreateExpenseInput extends CreateEntryInput {
+	extraordinary?: boolean;
+}
+
 interface ActionResult {
 	error?: string;
 }
@@ -25,6 +31,7 @@ interface ActionResult {
 async function createEntry(
 	input: CreateEntryInput,
 	kind: EntryKind,
+	extraordinary = false,
 ): Promise<ActionResult> {
 	const occurredOn = toIsoDate(input.date);
 	if (!occurredOn) return { error: "Falta la fecha" };
@@ -46,6 +53,7 @@ async function createEntry(
 
 	const { error } = await supabase.from("entries").insert({
 		amount,
+		extraordinary,
 		kind,
 		label,
 		occurred_on: occurredOn,
@@ -66,14 +74,15 @@ export async function createSale(
 }
 
 export async function createExpense(
-	input: CreateEntryInput,
+	input: CreateExpenseInput,
 ): Promise<ActionResult> {
-	return createEntry(input, "expense");
+	return createEntry(input, "expense", input.extraordinary === true);
 }
 
 export interface UpdateEntryInput {
 	amount: string | number;
 	date: Date | string;
+	extraordinary: boolean;
 	label: string;
 	paymentType: string;
 }
@@ -99,6 +108,7 @@ export async function updateEntry(
 		.from("entries")
 		.update({
 			amount,
+			extraordinary: patch.extraordinary,
 			label: patch.label.trim(),
 			occurred_on: occurredOn,
 			payment: patch.paymentType,

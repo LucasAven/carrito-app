@@ -71,6 +71,13 @@ const ExportView: FC<ExportViewProps> = ({
 }) => {
 	const [busy, setBusy] = useState(false);
 	const isEmpty = entries.length === 0;
+	const ordinaryCount = entries.filter((entry) => !entry.extraordinary).length;
+	// Scoped to the listed rows, unlike the Balance card's figure, so it adds up
+	// with what the report shows. Egresos and Neto above leave it out.
+	const extraordinary = entries.reduce(
+		(sum, entry) => (entry.extraordinary ? sum + entry.amount : sum),
+		0,
+	);
 
 	const handleCsv = async () => {
 		if (isEmpty || busy) return;
@@ -189,6 +196,15 @@ const ExportView: FC<ExportViewProps> = ({
 						</div>
 					</div>
 
+					<div className="mt-2 flex items-center justify-between gap-3 rounded-2xl border border-[#eadbce] px-2.5 py-2.5 sm:px-3 sm:py-3">
+						<p className="text-[10px] font-extrabold tracking-wide text-label sm:text-[11px]">
+							GASTOS EXTRAORDINARIOS
+						</p>
+						<p className="font-display text-sm font-bold whitespace-nowrap tabular-nums sm:text-lg">
+							{formatAmount(extraordinary)}
+						</p>
+					</div>
+
 					{isEmpty ? (
 						<p className="mt-6 text-center text-sm font-semibold text-muted">
 							No hay movimientos para exportar en este período.
@@ -222,6 +238,11 @@ const ExportView: FC<ExportViewProps> = ({
 											</td>
 											<td className="py-2 pr-1.5 font-bold wrap-break-word sm:pr-2">
 												{entry.label}
+												{entry.extraordinary ? (
+													<span className="ml-1.5 rounded-full bg-badge px-1.5 py-0.5 text-[10px] font-extrabold whitespace-nowrap text-label">
+														Extraordinario
+													</span>
+												) : null}
 											</td>
 											<td className="py-2 pr-1.5 text-muted sm:pr-2">
 												{PAYMENT_TYPE_LABELS[entry.payment]}
@@ -243,8 +264,12 @@ const ExportView: FC<ExportViewProps> = ({
 							<tfoot>
 								<tr className="border-t-2 border-[#3a2a22] font-extrabold">
 									<td className="py-2.5 pr-1.5 sm:pr-2" colSpan={3}>
-										Neto ({entries.length}{" "}
-										{entries.length === 1 ? "movimiento" : "movimientos"})
+										Neto ({ordinaryCount}{" "}
+										{ordinaryCount === 1 ? "movimiento" : "movimientos"}
+										{ordinaryCount < entries.length
+											? ", sin extraordinarios"
+											: ""}
+										)
 									</td>
 									<td
 										className={cn(

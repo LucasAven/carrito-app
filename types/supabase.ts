@@ -102,6 +102,7 @@ export type Database = {
           amount: number
           created_at?: string
           deleted_at?: string | null
+          extraordinary?: boolean
           id?: string
           kind: Database["public"]["Enums"]["entry_kind"]
           label: string
@@ -122,6 +123,7 @@ export type Database = {
           amount: number
           created_at: string
           deleted_at: string | null
+          extraordinary: boolean
           id: string
           kind: Database["public"]["Enums"]["entry_kind"]
           label: string
@@ -133,6 +135,7 @@ export type Database = {
           amount?: number
           created_at?: string
           deleted_at?: string | null
+          extraordinary?: boolean
           id?: string
           kind?: Database["public"]["Enums"]["entry_kind"]
           label?: string
