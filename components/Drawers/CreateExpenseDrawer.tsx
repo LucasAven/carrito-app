@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 
 import { AmountInput } from "../AmountInput";
 import { ConceptInput } from "../ConceptInput";
+import { ExtraordinaryField } from "../ExtraordinaryField";
 import { FormError } from "../FormError";
 import { InputDate } from "../InputDate";
 import { PaymentTypeField } from "../PaymentTypeField";
@@ -21,6 +22,7 @@ interface ExpenseFormValues {
 	date: string;
 	expenseAmount: string;
 	expenseName: string;
+	extraordinary: boolean;
 	paymentType: string;
 }
 
@@ -49,6 +51,7 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
 			date: selectedDate,
 			expenseAmount: "",
 			expenseName: DEFAULT_EXPENSE_NAME,
+			extraordinary: false,
 			paymentType: "cash",
 		},
 	});
@@ -61,6 +64,7 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
 				date: selectedDate,
 				expenseAmount: "",
 				expenseName: DEFAULT_EXPENSE_NAME,
+				extraordinary: false,
 				paymentType: "cash",
 			});
 		}
@@ -71,6 +75,7 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
 		const result = await createExpense({
 			amount: data.expenseAmount,
 			date: data.date,
+			extraordinary: data.extraordinary,
 			label: data.expenseName,
 			paymentType: data.paymentType,
 		});
@@ -141,6 +146,12 @@ export function CreateExpenseDrawer({ children }: { children: ReactNode }) {
 					/>
 					<FormError error={errors.paymentType} />
 				</div>
+
+				<ExtraordinaryField
+					id="expense-extraordinary"
+					name="extraordinary"
+					register={register}
+				/>
 
 				{submitError && (
 					<p className="text-cost text-sm font-semibold">{submitError}</p>
