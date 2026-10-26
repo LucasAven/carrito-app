@@ -3,6 +3,7 @@ import { endOfMonth, parse, startOfMonth } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { PaymentType } from "@/types/balance";
 import type { Database } from "@/types/supabase";
+import { getFullDateIso } from "@/utils";
 
 export type Entry = Database["public"]["Tables"]["entries"]["Row"];
 export type EntryKind = Database["public"]["Enums"]["entry_kind"];
@@ -83,8 +84,8 @@ export async function listEntriesByMonth(
   const parsed = parse(month, "MMM-yyyy", new Date());
   if (parsed.toString() === "Invalid Date") return [];
 
-  const start = startOfMonth(parsed).toISOString().split("T")[0];
-  const end = endOfMonth(parsed).toISOString().split("T")[0];
+  const start = getFullDateIso(startOfMonth(parsed));
+  const end = getFullDateIso(endOfMonth(parsed));
 
   return listEntriesByWeek(start, end, options);
 }
@@ -144,26 +145,4 @@ export async function sumExtraordinaryExpenses(
 
   if (error) throw error;
   return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);
-}
-
-export interface EntryTotals {
-  earnings: number;
-  expenses: number;
-  extraordinary: number;
-  total: number;
-}
-
-// `expenses` is ordinary expenses only, so `total` is the net the Operator
-// lives by: an extraordinary spend is reported on its own and never nets off a
-// day's profit.
-export function summarizeEntries(entries: Entry[]): EntryTotals {
-  let earnings = 0;
-  let expenses = 0;
-  let extraordinary = 0;
-  for (const entry of entries) {
-    if (entry.kind === "sale") earnings += entry.amount;
-    else if (entry.extraordinary) extraordinary += entry.amount;
-    else expenses += entry.amount;
-  }
-  return { earnings, expenses, extraordinary, total: earnings - expenses };
 }

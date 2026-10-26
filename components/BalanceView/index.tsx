@@ -8,6 +8,7 @@ import EarnsCostsTab from "@/components/EarnsCostsTab";
 import { showToast } from "@/components/Toast";
 import type { ExtraordinarySection } from "@/lib/balance/load";
 import type { Entry } from "@/lib/db/entries";
+import { summarizeEntries } from "@/lib/entries/totals";
 
 const withoutId = (ids: Set<string>, id: string) => {
 	const next = new Set(ids);
@@ -33,16 +34,9 @@ const BalanceView: FC<BalanceViewProps> = ({
 
 	const visibleEntries = entries.filter((entry) => !hiddenIds.has(entry.id));
 
-	// Totals are derived here (not via the server's summarizeEntries) so they
-	// recompute instantly from the optimistic visible set. Keep this in sync with
-	// summarizeEntries in lib/db/entries.ts.
-	let earnings = 0;
-	let expenses = 0;
-	for (const entry of visibleEntries) {
-		if (entry.kind === "sale") earnings += entry.amount;
-		else if (!entry.extraordinary) expenses += entry.amount;
-	}
-	const total = earnings - expenses;
+	// Recomputed from the optimistic visible set (not taken from the server) so
+	// the totals drop instantly on delete.
+	const { earnings, expenses, total } = summarizeEntries(visibleEntries);
 
 	// The extraordinary figure covers a wider span than the list (a day view
 	// reports its whole month), so it cannot be recomputed from the visible

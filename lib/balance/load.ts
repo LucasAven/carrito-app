@@ -4,14 +4,13 @@ import { es } from "date-fns/locale";
 import { URL_FILTERS } from "@/constants/routes";
 import {
 	type Entry,
-	type EntryTotals,
 	listEntriesByDate,
 	listEntriesByMonth,
 	listEntriesByWeek,
 	listEntriesByYear,
 	sumExtraordinaryExpenses,
-	summarizeEntries,
 } from "@/lib/db/entries";
+import { type EntryTotals, summarizeEntries } from "@/lib/entries/totals";
 import {
 	convertUrlWeekRangeToWeeksDates,
 	getFiltersFromSearchParams,
@@ -110,7 +109,7 @@ export async function loadBalanceEntries(
 	const filters = getFiltersFromSearchParams(searchParams);
 	const options = { paymentTypes: filters.paymentTypes };
 
-	let entries: Entry[] = [];
+	let entriesQuery: Promise<Entry[]> = Promise.resolve([]);
 	// Resolved in the same pass as the entry list so the two can never disagree
 	// about which period is on screen. The span is the list's own, except in a
 	// day view, where it widens to the month.
@@ -118,21 +117,21 @@ export async function loadBalanceEntries(
 	let extraordinarySpan: Span | null = null;
 
 	if (date) {
-		entries = await listEntriesByDate(date, options);
+		entriesQuery = listEntriesByDate(date, options);
 		extraordinaryLabel = "Gastos extraordinarios del mes";
 		extraordinarySpan = monthSpan(new Date(`${date}T00:00:00`));
 	} else if (week) {
 		const weekRange = convertUrlWeekRangeToWeeksDates(week);
 		const start = weekRange?.weekStart?.toISOString().split("T")[0];
 		const end = weekRange?.weekEnd?.toISOString().split("T")[0];
-		entries = await listEntriesByWeek(start, end, options);
+		entriesQuery = listEntriesByWeek(start, end, options);
 		extraordinarySpan = { end, start };
 	} else if (month) {
-		entries = await listEntriesByMonth(month, options);
+		entriesQuery = listEntriesByMonth(month, options);
 		extraordinaryLabel = "Gastos extraordinarios del mes";
 		extraordinarySpan = monthSpan(parse(month, "MMM-yyyy", new Date()));
 	} else if (year) {
-		entries = await listEntriesByYear(year, options);
+		entriesQuery = listEntriesByYear(year, options);
 		extraordinaryLabel = "Gastos extraordinarios del año";
 		extraordinarySpan = { end: `${year}-12-31`, start: `${year}-01-01` };
 	} else if (range) {
@@ -140,20 +139,24 @@ export async function loadBalanceEntries(
 		// query the week/month/year scopes resolve down to.
 		const parsed = parseRangeUrl(range);
 		if (parsed) {
-			entries = await listEntriesByWeek(parsed.from, parsed.to, options);
+			entriesQuery = listEntriesByWeek(parsed.from, parsed.to, options);
 			extraordinarySpan = { end: parsed.to, start: parsed.from };
 		}
 	}
 
-	const extraordinarySection: ExtraordinarySection = {
-		label: extraordinaryLabel,
-		total: extraordinarySpan
-			? await sumExtraordinaryExpenses(
-					extraordinarySpan.start,
-					extraordinarySpan.end,
-				)
+	const [entries, extraordinaryTotal] = await Promise.all([
+		entriesQuery,
+		extraordinarySpan
+			? sumExtraordinaryExpenses(extraordinarySpan.start, extraordinarySpan.end)
 			: 0,
-	};
+	]);
 
-	return { entries, extraordinarySection, ...summarizeEntries(entries) };
+	return {
+		entries,
+		extraordinarySection: {
+			label: extraordinaryLabel,
+			total: extraordinaryTotal,
+		},
+		...summarizeEntries(entries),
+	};
 }

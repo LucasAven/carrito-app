@@ -18,9 +18,6 @@ interface ExportViewProps {
 	earnings: number;
 	entries: Entry[];
 	expenses: number;
-	// Reported on its own line: Egresos and Neto above leave it out, the same
-	// way the Balance card does.
-	extraordinary: number;
 	generatedOn: string;
 	periodLabel: string;
 	total: number;
@@ -68,7 +65,6 @@ const ExportView: FC<ExportViewProps> = ({
 	earnings,
 	entries,
 	expenses,
-	extraordinary,
 	generatedOn,
 	periodLabel,
 	total,
@@ -76,6 +72,12 @@ const ExportView: FC<ExportViewProps> = ({
 	const [busy, setBusy] = useState(false);
 	const isEmpty = entries.length === 0;
 	const ordinaryCount = entries.filter((entry) => !entry.extraordinary).length;
+	// Scoped to the listed rows, unlike the Balance card's figure, so it adds up
+	// with what the report shows. Egresos and Neto above leave it out.
+	const extraordinary = entries.reduce(
+		(sum, entry) => (entry.extraordinary ? sum + entry.amount : sum),
+		0,
+	);
 
 	const handleCsv = async () => {
 		if (isEmpty || busy) return;
