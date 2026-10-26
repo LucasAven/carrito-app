@@ -60,7 +60,12 @@ const TabPanel = ({
 				{entries.map((entry) => (
 					<li key={entry.id}>
 						<button
-							className="bg-surface dark:bg-surface-dark flex w-full items-center gap-3 rounded-[18px] px-4 py-3.5 text-left shadow-[0_2px_9px_rgba(58,42,34,0.06)]"
+							className={cn(
+								"flex w-full items-center gap-3 rounded-[18px] px-4 py-3.5 text-left",
+								entry.extraordinary
+									? "bg-badge dark:bg-track-dark border-cost/45 dark:border-cost-dark/45 border-2 border-dashed"
+									: "bg-surface dark:bg-surface-dark shadow-[0_2px_9px_rgba(58,42,34,0.06)]",
+							)}
 							onClick={() => onEntryClick(entry)}
 							type="button"
 						>
