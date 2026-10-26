@@ -150,15 +150,11 @@ export async function sumExtraordinaryExpenses(
 ): Promise<number> {
   if (!ISO_DATE.test(start) || !ISO_DATE.test(end)) return 0;
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("entries")
-    .select("amount")
-    .is("deleted_at", null)
-    .eq("extraordinary", true)
-    .gte("occurred_on", start)
-    .lte("occurred_on", end);
-
-  if (error) throw error;
-  return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);
+  const rows = await listAllPages((query) =>
+    query
+      .eq("extraordinary", true)
+      .gte("occurred_on", start)
+      .lte("occurred_on", end),
+  );
+  return rows.reduce((sum, row) => sum + row.amount, 0);
 }
